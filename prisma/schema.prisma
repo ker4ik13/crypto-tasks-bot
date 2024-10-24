@@ -1,0 +1,62 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model BotUser {
+  id             BigInt     @id @unique
+  firstName      String
+  lastName       String?
+  username       String?
+  languageCode   String?
+  isAdmin        Boolean    @default(false)
+  refCode        String     @unique
+  fromRefCode    Int        @default(0)
+  currentBalance Float      @default(0)
+  outputBalance  Float      @default(0)
+  payments       Payments[]
+}
+
+model Promocodes {
+  id         Int     @id @default(autoincrement())
+  promo      String  @unique
+  amount     Float
+  currency   String
+  usageLimit Int
+  usageCount Int     @default(0)
+  isActive   Boolean @default(true)
+}
+
+model Payments {
+  id          Int      @id @default(autoincrement())
+  date        DateTime
+  requestDate DateTime @default(now())
+  amount      Float
+  currency    String
+  status      String   @default("pending")
+  user        BotUser  @relation(fields: [userId], references: [id])
+  userId      BigInt
+}
+
+model SponsorChannels {
+  id             Int      @id @default(autoincrement())
+  channelName    String
+  channelLink    String
+  isActive       Boolean  @default(true)
+  createdDate    DateTime @default(now())
+  expirationDate DateTime
+  sponsorName    String
+  sponsorLink    String
+}
+
+model Contacts {
+  id          Int      @id @default(autoincrement())
+  contactName String
+  contactLink String
+  isActive    Boolean  @default(true)
+  createdDate DateTime @default(now())
+}
