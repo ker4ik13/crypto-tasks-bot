@@ -2,6 +2,9 @@ import { ENV_NAMES } from '@lib/common';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { BotModule } from './bot/bot.module';
+import { UsersModule } from './crud';
+import { DatabaseModule } from './crud/database/database.module';
+import { ReferralsModule } from './crud/referrals';
 
 @Module({
   imports: [
@@ -10,6 +13,9 @@ import { BotModule } from './bot/bot.module';
       isGlobal: true,
     }),
     BotModule,
+    DatabaseModule,
+    UsersModule,
+    ReferralsModule,
   ],
   controllers: [],
   providers: [],

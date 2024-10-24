@@ -1,4 +1,4 @@
-import { Hears, InjectBot, Message, Update } from 'nestjs-telegraf';
+import { Ctx, Hears, InjectBot, Message, Update } from 'nestjs-telegraf';
 import { Context, Telegraf } from 'telegraf';
 import { BotService } from './bot.service';
 
@@ -11,9 +11,26 @@ export class BotUpdate {
   ) {}
 
   @Hears(/^\/start[ =](.+)$/)
-  async start(@Message('text') message: string) {
-    const referalCode = message.split(' ')[1];
-    console.log(referalCode);
+  async start(@Ctx() ctx: Context, @Message('text') message: string) {
+    const referralCode = message.split(' ')[1];
+    console.log(referralCode);
+    // const user: CreateUserDto = {
+    //   id: ctx.from.id,
+    //   firstName: ctx.message.from.first_name,
+    //   lastName: ctx.message.from.last_name,
+    //   username: ctx.message.from.username,
+    //   languageCode: ctx.from.language_code,
+    //   createdDate: new Date(),
+    //   refCode: referralCodes.generate({
+    //     length: 8,
+    //   })[0],
+    //   fromRefCode: referralCode,
+    // currentBalance: 0,
+    // outputBalance: 0,
+    // referredUsers: 0,
+    // isAdmin: false,
+    // }
+    // };
     // const newUser: CreateUserDto = {
     //   firstName: ctx.from.first_name,
     //   lastName: ctx.from.last_name,

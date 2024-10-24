@@ -1,6 +1,7 @@
 {
   "name": "crypto-tasks",
   "version": "1.0.0",
+  "type": "commonjs",
   "description": "Bot with tasks and payments in cryptocurrency",
   "author": {
     "email": "kireevdev1@gmail.com",
