@@ -94,4 +94,5 @@ enum WithdrawStatus {
 enum SponsorChannelType {
   start
   task
+  all
 }

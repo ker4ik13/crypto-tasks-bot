@@ -35,7 +35,7 @@ export class SponsorsService {
 
   async findStart(): Promise<SponsorChannel[] | null> {
     return await this.database.sponsorChannel.findMany({
-      where: { type: 'start' },
+      where: { OR: [{ type: 'start' }, { type: 'all' }] },
       orderBy: { expirationDate: 'asc' },
       include: {
         subsUsers: {
@@ -49,7 +49,7 @@ export class SponsorsService {
 
   async findTasks(): Promise<SponsorChannel[] | null> {
     return await this.database.sponsorChannel.findMany({
-      where: { type: 'task' },
+      where: { OR: [{ type: 'task' }, { type: 'all' }] },
       orderBy: { expirationDate: 'asc' },
       include: {
         subsUsers: {

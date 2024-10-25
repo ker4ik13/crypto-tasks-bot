@@ -127,7 +127,7 @@ export class BotService {
 
       return notSubsChannels;
     } catch (error) {
-      throw new Error('Ошибка в bot.service.ts:mapChannels');
+      throw new Error(`Ошибка в bot.service.ts:mapChannels\n\n${error}`);
     }
   }
 
