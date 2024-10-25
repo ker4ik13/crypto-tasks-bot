@@ -1,1 +1,2 @@
-// export * from './bot-messages';
+export * from './bot-alerts';
+export * from './bot-messages';

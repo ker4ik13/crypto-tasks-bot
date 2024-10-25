@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+} from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { ReferralsService } from './referrals.service';
 
@@ -26,13 +34,13 @@ export class ReferralsController {
     return this.referralsService.findById(+id);
   }
 
-  // @Patch(':id')
-  // updateById(@Param('id') id: string, @Body() dto: UpdateUserDto) {
-  //   return this.referralsService.updateById(+id, dto);
-  // }
+  @Patch(':id')
+  updateById(@Param('id') id: string, @Body() dto: Prisma.ReferralUpdateInput) {
+    return this.referralsService.updateById(+id, dto);
+  }
 
-  // @Delete(':id')
-  // removeById(@Param('id') id: string) {
-  //   return this.referralsService.removeById(+id);
-  // }
+  @Delete(':id')
+  removeById(@Param('id') id: string) {
+    return this.referralsService.removeById(+id);
+  }
 }

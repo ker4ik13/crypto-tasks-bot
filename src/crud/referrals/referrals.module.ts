@@ -1,11 +1,12 @@
 import { Module } from '@nestjs/common';
 import { DatabaseModule } from '../database/database.module';
+import { MessagesModule } from '../messages';
+import { UsersModule } from '../users';
 import { ReferralsController } from './referrals.controller';
 import { ReferralsService } from './referrals.service';
-// import { UsersController } from './users.controller';
 
 @Module({
-  imports: [DatabaseModule],
+  imports: [DatabaseModule, UsersModule, MessagesModule],
   controllers: [ReferralsController],
   providers: [ReferralsService],
   exports: [ReferralsService],

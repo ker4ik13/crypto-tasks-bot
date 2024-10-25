@@ -8,7 +8,8 @@ datasource db {
 }
 
 model User {
-  id             Int       @id @unique
+  id             Int       @id @default(autoincrement())
+  telegramId     String    @unique
   firstName      String
   lastName       String?
   username       String?
@@ -17,20 +18,21 @@ model User {
   currentBalance Float     @default(0)
   outputBalance  Float     @default(0)
   payments       Payment[]
-  createdDate    DateTime  @default(now())
+  createdDate    DateTime  @default(now()) @db.Date
 
   // Пользователь, который пригласил данного пользователя (через реферальный код)
   invitedBy   Referral? @relation("InvitedUsers", fields: [invitedById], references: [id])
   invitedById Int?
 
   // Собственный реферальный код, который принадлежит данному пользователю
-  referral Referral? @relation("ReferralOwner")
+  referral        Referral?        @relation("ReferralOwner")
+  sponsorChannels SponsorChannel[] @relation("SubsUsers")
 }
 
 model Payment {
   id          Int            @id @default(autoincrement())
-  date        DateTime
-  requestDate DateTime       @default(now())
+  date        DateTime       @db.Date
+  requestDate DateTime       @default(now()) @db.Date
   amount      Float
   currency    String
   status      WithdrawStatus @default(pending)
@@ -60,27 +62,36 @@ model Promocode {
   isActive   Boolean @default(true)
 }
 
-model SponsorChannels {
-  id             Int      @id @default(autoincrement())
+model SponsorChannel {
+  id             Int                @id @default(autoincrement())
   channelName    String
   channelLink    String
-  isActive       Boolean  @default(true)
-  createdDate    DateTime @default(now())
-  expirationDate DateTime
+  channelSlug    String             @unique
+  isActive       Boolean            @default(true)
+  createdDate    DateTime           @default(now()) @db.Date
+  expirationDate DateTime           @db.Date
   sponsorName    String
   sponsorLink    String
+  reward         Float
+  type           SponsorChannelType
+  subsUsers      User[]             @relation("SubsUsers")
 }
 
-model Contacts {
+model Contact {
   id          Int      @id @default(autoincrement())
   contactName String
   contactLink String
   isActive    Boolean  @default(true)
-  createdDate DateTime @default(now())
+  createdDate DateTime @default(now()) @db.Date
 }
 
 enum WithdrawStatus {
   pending
   success
   failed
+}
+
+enum SponsorChannelType {
+  start
+  task
 }

@@ -2,9 +2,11 @@ import { ENV_NAMES } from '@lib/common';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { BotModule } from './bot/bot.module';
-import { UsersModule } from './crud';
+import { MessagesModule, UsersModule } from './crud';
 import { DatabaseModule } from './crud/database/database.module';
 import { ReferralsModule } from './crud/referrals';
+import { SponsorsModule } from './crud/sponsors';
+import { WalletModule } from './crud/wallet';
 
 @Module({
   imports: [
@@ -13,9 +15,12 @@ import { ReferralsModule } from './crud/referrals';
       isGlobal: true,
     }),
     BotModule,
+    MessagesModule,
     DatabaseModule,
     UsersModule,
     ReferralsModule,
+    SponsorsModule,
+    WalletModule,
   ],
   controllers: [],
   providers: [],
