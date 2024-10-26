@@ -25,7 +25,7 @@ export const BotMessages = {
     reward = DEFAULT_REWARD_FOR_A_FRIEND,
     botUsername = DEFAULT_TELEGRAM_BOT_USERNAME,
   ) => {
-    return `${emojis.diamond} Приглашай друзей и получай ${reward} ${currency} за каждого друга\n\n${emojis.peoples} Всего пригласил: ${user.referral.invitedUsers.length} человек\n\n${emojis.link} Ссылка для приглашения: https://t.me/${botUsername}?start=${refCode}`;
+    return `${emojis.diamond} Приглашай друзей и получай ${reward} ${currency} за каждого друга\n\n${emojis.peoples} Количество рефералов: ${user.referral.invitedUsers.length} человек\n\n${emojis.link} Ссылка для приглашения: https://t.me/${botUsername}?start=${refCode}`;
   },
   withdraw: (
     minWithdrawalAmount = MIN_WITHDRAWAL_AMOUNT,
