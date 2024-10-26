@@ -29,6 +29,11 @@ export class MessagesService {
   // Массовая рассылка
   async sendMessageAllUsers(message: ICustomMessage) {
     const users = await this.database.user.findMany({
+      where: {
+        isBlockedTheBot: {
+          equals: false,
+        },
+      },
       orderBy: { createdDate: 'desc' },
     });
 
@@ -50,11 +55,6 @@ export class MessagesService {
     // Если есть фото и их больше 1 или 1
     if (message.photos && message.photos.length >= 1) {
       for (const user of users) {
-        // Если заблокировал бота
-        if (user.isBlockedTheBot) {
-          continue;
-        }
-
         if (message.photos.length === 1) {
           try {
             await this.bot.telegram.sendPhoto(
@@ -108,11 +108,6 @@ export class MessagesService {
     }
 
     for (const user of users) {
-      // Если заблокировал бота
-      if (user.isBlockedTheBot) {
-        continue;
-      }
-
       try {
         await this.bot.telegram.sendMessage(+user.telegramId, message.message, {
           parse_mode: 'HTML',

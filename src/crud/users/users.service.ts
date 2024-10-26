@@ -246,7 +246,12 @@ export class UsersService {
 
   async isUserAdmin(id: number): Promise<boolean> {
     const user = await this.database.user.findUnique({
-      where: { id, isAdmin: true },
+      where: {
+        id,
+        isAdmin: {
+          equals: true,
+        },
+      },
     });
 
     if (!user || !user.id) {
@@ -271,7 +276,11 @@ export class UsersService {
 
   async findAllAdmins(): Promise<(User | null)[]> {
     return await this.database.user.findMany({
-      where: { isAdmin: true },
+      where: {
+        isAdmin: {
+          equals: true,
+        },
+      },
     });
   }
 }
