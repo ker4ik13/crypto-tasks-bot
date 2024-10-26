@@ -4,20 +4,22 @@ import { Markup } from 'telegraf';
 
 export const newTaskKeyboard = (channel: SponsorChannel) => {
   return [
+    [Markup.button.url(`${emojis.diamond} Подписаться`, channel.channelLink)],
     [
-      Markup.button.url(`${emojis.diamond} Подписаться`, channel.channelLink),
+      Markup.button.callback(`${emojis.back} Назад`, 'main-menu'),
       Markup.button.callback(
         `${emojis.checkmark} Проверить`,
         `tasks-check|${channel.channelSlug}`,
       ),
     ],
-    [Markup.button.callback(`${emojis.back} Назад`, 'main-menu')],
   ];
 };
 
 export const nextTaskKeyboard = () => {
   return [
-    [Markup.button.callback(`${emojis.back} Назад`, `main-menu`)],
-    [Markup.button.callback(`${emojis.flyMoney} Следующее задание`, `tasks`)],
+    [
+      Markup.button.callback(`${emojis.back} Назад`, `main-menu`),
+      Markup.button.callback(`${emojis.flyMoney} Следующее задание`, `tasks`),
+    ],
   ];
 };

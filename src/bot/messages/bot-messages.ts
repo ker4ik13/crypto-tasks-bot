@@ -1,9 +1,9 @@
 import {
   DEFAULT_ADMIN_USERNAME,
   DEFAULT_CURRENCY,
+  DEFAULT_MIN_WITHDRAWAL_AMOUNT,
   DEFAULT_REWARD_FOR_A_FRIEND,
   DEFAULT_TELEGRAM_BOT_USERNAME,
-  MIN_WITHDRAWAL_AMOUNT,
 } from '@/lib/common';
 import { beautyCurrency, getNormalChannelLink } from '@/lib/helpers';
 import { UserWithReferral } from '@/lib/types';
@@ -28,7 +28,7 @@ export const BotMessages = {
     return `${emojis.diamond} Приглашай друзей и получай ${reward} ${currency} за каждого друга\n\n${emojis.peoples} Всего пригласил: ${user.referral.invitedUsers.length} человек\n\n${emojis.link} Ссылка для приглашения: https://t.me/${botUsername}?start=${refCode}`;
   },
   withdraw: (
-    minWithdrawalAmount = MIN_WITHDRAWAL_AMOUNT,
+    minWithdrawalAmount = DEFAULT_MIN_WITHDRAWAL_AMOUNT,
     currency = DEFAULT_CURRENCY,
     adminUsername = DEFAULT_ADMIN_USERNAME,
   ) =>
@@ -40,6 +40,9 @@ export const BotMessages = {
   ) =>
     `<b>📊 Информация о проекте:</b>\n\n${emojis.peoples} Пользователей в боте: ${numbersOfUsers}\n${emojis.flyMoney} Выплачено: ${beautyCurrency(totalWithdrawal)} ${currency}`,
   topRefs: (users: UserWithReferral[]) => {
+    if (!users || users.length === 0) {
+      return `${emojis.warning} Статистика пока пустая. <b>Делитесь ботом</b> с друзьями и приходите позже!`;
+    }
     return `${emojis.cup} Топ рефоводов:\n\n${users
       .map((user, index) => {
         return `<b>${index + 1}.</b> <a href='https://t.me/${user.username}'>${user.firstName} ${user.lastName ? user.lastName : ''}</a> – ${user.referral.invitedUsers.length} рефералов`;

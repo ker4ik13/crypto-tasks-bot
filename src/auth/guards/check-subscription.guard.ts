@@ -28,10 +28,9 @@ export class CheckSubscriptionGuard implements CanActivate {
       return true;
     }
 
-    // Проверка подписок через BotService
     const notSubsChannels = await this.botService.checkChannelsSubs(
       ctx,
-      'first',
+      'next',
       user,
     );
 

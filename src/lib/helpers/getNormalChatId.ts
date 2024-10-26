@@ -17,5 +17,5 @@ export const getNormalChannelLink = (channel: SponsorChannel) => {
     return channel.channelLink;
   }
 
-  return `@${channel.channelSlug}`;
+  return `<a href="${channel.channelLink}">${channel.channelName}</a>`;
 };

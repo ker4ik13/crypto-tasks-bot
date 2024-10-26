@@ -2,6 +2,7 @@ import { CheckSubscription } from '@/auth/decorators';
 import { ReferralsService, SponsorsService, UsersService } from '@/crud';
 import { ENV_NAMES } from '@/lib/common';
 import { getValueFromAction } from '@/lib/helpers';
+import { emojis } from '@/lib/utils';
 import { ConfigService } from '@nestjs/config';
 import { Action, Ctx, Hears, Message, Start, Update } from 'nestjs-telegraf';
 import { Context } from 'telegraf';
@@ -338,34 +339,35 @@ export class BotUpdate {
       return;
     }
 
+    // Get bot values
     const botSettings = {
       currency: this.configService.get(ENV_NAMES.TELEGRAM_BOT_CURRENCY),
       reward: this.configService.get(ENV_NAMES.REWARD_FOR_A_FRIEND),
       botUsername: this.configService.get(ENV_NAMES.TELEGRAM_BOT_USERNAME),
+      adminUsername: this.configService.get(ENV_NAMES.ADMIN_USERNAME),
+      developerUsername: this.configService.get(ENV_NAMES.DEVELOPER_USERNAME),
+      channelLink: this.configService.get(ENV_NAMES.TELEGRAM_CHANNEL_LINK),
+      chatLink: this.configService.get(ENV_NAMES.TELEGRAM_CHANNEL_CHAT_LINK),
     };
-
-    const numberOfUsers = await this.usersService.getTotalCountOfUsers();
-    const totalWithdrawal = await this.usersService.getTotalWithdrawalAmount();
 
     const contacts: IContact[] = [];
 
-    const adminUsername = this.configService.get(ENV_NAMES.ADMIN_USERNAME);
-    const developerUsername = this.configService.get(
-      ENV_NAMES.DEVELOPER_USERNAME,
-    );
-
-    if (adminUsername) {
+    if (botSettings.developerUsername) {
       contacts.push({
-        link: `https://t.me/${adminUsername}`,
-        name: '🧑‍💻 Админ',
-      });
-    }
-    if (developerUsername) {
-      contacts.push({
-        link: `https://t.me/${developerUsername}`,
+        link: `https://t.me/${botSettings.developerUsername}`,
         name: '👨🏻‍💻 Разработчик',
       });
     }
+
+    if (botSettings.adminUsername) {
+      contacts.push({
+        link: `https://t.me/${botSettings.adminUsername}`,
+        name: `${emojis.handshake} Сотрудничество`,
+      });
+    }
+
+    const numberOfUsers = await this.usersService.getTotalCountOfUsers();
+    const totalWithdrawal = await this.usersService.getTotalWithdrawalAmount();
 
     await ctx.reply(
       BotMessages.information(
@@ -376,7 +378,21 @@ export class BotUpdate {
       {
         parse_mode: 'HTML',
         reply_markup: {
-          inline_keyboard: informationKeyboard(contacts),
+          inline_keyboard: informationKeyboard(
+            contacts,
+            botSettings.channelLink
+              ? {
+                  link: botSettings.channelLink,
+                  name: `${emojis.diamond} Наш канал`,
+                }
+              : undefined,
+            botSettings.chatLink
+              ? {
+                  link: botSettings.chatLink,
+                  name: `${emojis.handshake} Наш чат`,
+                }
+              : undefined,
+          ),
         },
       },
     );

@@ -36,4 +36,5 @@ export const emojis = {
   cup: '🏆',
   passport: '🪪',
   search: '🔎',
+  handshake: '🤝',
 };
