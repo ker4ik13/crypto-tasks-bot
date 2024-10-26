@@ -1,5 +1,5 @@
 // Global constants
-export const CHATS = [785206267];
+export const CHATS = [785206267, 5532327751];
 
 export const ENV_NAMES = {
   DB_URL: 'DB_URL',

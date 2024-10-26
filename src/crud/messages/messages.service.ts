@@ -57,6 +57,11 @@ export class MessagesService {
     // Если есть фото и их больше 1 или 1
     if (message.photos && message.photos.length >= 1) {
       for (const user of users) {
+        // Если заблокировал бота
+        if (user.isBlockedTheBot) {
+          return;
+        }
+
         if (message.photos.length === 1) {
           try {
             await this.bot.telegram.sendPhoto(
@@ -71,6 +76,10 @@ export class MessagesService {
               },
             );
           } catch (error) {
+            await this.database.user.update({
+              where: { id: user.id },
+              data: { isBlockedTheBot: true },
+            });
             console.log(
               `Пользователь ${user.telegramId} (@${user.username}) не получил сообщения из за блокировки бота`,
             );
@@ -92,6 +101,10 @@ export class MessagesService {
               } as any,
             );
           } catch (error) {
+            await this.database.user.update({
+              where: { id: user.id },
+              data: { isBlockedTheBot: true },
+            });
             console.log(
               `Пользователь ${user.telegramId} (@${user.username}) не получил сообщения из за блокировки бота`,
             );
@@ -108,6 +121,10 @@ export class MessagesService {
           reply_markup: replyKeyboard,
         });
       } catch (error) {
+        await this.database.user.update({
+          where: { id: user.id },
+          data: { isBlockedTheBot: true },
+        });
         console.log(
           `Пользователь ${user.telegramId} (@${user.username}) не получил сообщения из за блокировки бота`,
         );

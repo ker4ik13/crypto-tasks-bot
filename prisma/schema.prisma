@@ -8,17 +8,18 @@ datasource db {
 }
 
 model User {
-  id             Int       @id @default(autoincrement())
-  telegramId     String    @unique
-  firstName      String
-  lastName       String?
-  username       String?
-  languageCode   String?
-  isAdmin        Boolean?  @default(false)
-  currentBalance Float     @default(0)
-  outputBalance  Float     @default(0)
-  payments       Payment[]
-  createdDate    DateTime  @default(now()) @db.Date
+  id              Int       @id @default(autoincrement())
+  telegramId      String    @unique
+  firstName       String
+  lastName        String?
+  username        String?
+  languageCode    String?
+  isAdmin         Boolean?  @default(false)
+  currentBalance  Float     @default(0)
+  outputBalance   Float     @default(0)
+  payments        Payment[]
+  createdDate     DateTime  @default(now()) @db.Date
+  isBlockedTheBot Boolean?  @default(false)
 
   // Пользователь, который пригласил данного пользователя (через реферальный код)
   invitedBy   Referral? @relation("InvitedUsers", fields: [invitedById], references: [id])

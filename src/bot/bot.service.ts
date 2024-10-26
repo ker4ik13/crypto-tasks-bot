@@ -1,5 +1,6 @@
 import { SponsorsService, UsersService } from '@/crud';
 import {
+  CHATS,
   DEFAULT_CURRENCY,
   DEFAULT_REWARD_FOR_A_FRIEND,
   ENV_NAMES,
@@ -86,48 +87,35 @@ export class BotService {
       const notSubsChannels: SponsorChannel[] = [];
 
       for (const channel of channels) {
-        const member = await ctx.telegram.getChatMember(
-          `@${channel.channelSlug}`,
-          ctx.from.id,
-        );
+        try {
+          const member = await ctx.telegram.getChatMember(
+            `@${channel.channelSlug}`,
+            ctx.from.id,
+          );
 
-        if (
-          member.status != 'member' &&
-          member.status != 'administrator' &&
-          member.status != 'creator'
-        ) {
-          notSubsChannels.push(channel);
+          if (
+            member.status != 'member' &&
+            member.status != 'administrator' &&
+            member.status != 'creator'
+          ) {
+            notSubsChannels.push(channel);
+          }
+        } catch (error) {
+          for (const admin of CHATS) {
+            await this.sendMessageByChatId(
+              admin,
+              `Ошибка при проверке каналов на подписки. Возможно, бот не добавлен в администраторы канала @${channel.channelSlug}\n\n${error}`,
+            );
+            console.log(error);
+          }
         }
       }
 
-      // Решение через Promise.all - тоже вылезают ошибки
-
-      // const promises = channels.map((channel) => {
-      //   return new Promise(async (resolve) => {
-      //     const member = await ctx.telegram.getChatMember(
-      //       `@${channel.channelSlug}`,
-      //       ctx.from.id,
-      //     );
-
-      //     resolve(member);
-      //   }) as Promise<ChatMember>;
-      // });
-
-      // const results = await Promise.all(promises);
-
-      // results.map((result, index) => {
-      //   if (
-      //     result.status != 'member' &&
-      //     result.status != 'administrator' &&
-      //     result.status != 'creator'
-      //   ) {
-      //     notSubsChannels.push(channels[index]);
-      //   }
-      // });
-
       return notSubsChannels;
     } catch (error) {
-      throw new Error(`Ошибка в bot.service.ts:mapChannels\n\n${error}`);
+      throw new Error(
+        `Ошибка при проверке каналов на подписки. Возможно, бот не добавлен в администраторы канала.\n\n${error}`,
+      );
     }
   }
 
