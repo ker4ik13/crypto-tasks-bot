@@ -83,7 +83,11 @@ export class BotUpdate {
       return;
     }
 
-    this.botService.checkChannelsSubs(ctx, 'first');
+    const user = await this.usersService.findByTelegramId(
+      ctx.from.id.toString(),
+    );
+
+    this.botService.checkChannelsSubs(ctx, 'first', user);
     return;
   }
 

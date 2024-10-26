@@ -10,7 +10,7 @@ import { IAdminMessage } from '@/lib/types';
 import { emojis } from '@/lib/utils';
 import { BadGatewayException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { SponsorChannel } from '@prisma/client';
+import { SponsorChannel, User } from '@prisma/client';
 import { InjectBot } from 'nestjs-telegraf';
 import { Context, Telegraf } from 'telegraf';
 import { SceneContext } from 'telegraf/scenes';
@@ -28,7 +28,12 @@ export class BotService {
 
   async checkAllSubscriptions(
     ctx: SceneContext | Context,
+    user?: User,
   ): Promise<SponsorChannel[]> {
+    if (user && user.isAdmin) {
+      return [];
+    }
+
     const sponsorsChannels = await this.sponsorsService.findStart();
 
     if (!sponsorsChannels) {
@@ -43,8 +48,9 @@ export class BotService {
   async checkChannelsSubs(
     ctx: SceneContext | Context,
     mode: 'first' | 'next' = 'next',
+    user?: User,
   ): Promise<SponsorChannel[]> {
-    const notChannelSubs = await this.checkAllSubscriptions(ctx);
+    const notChannelSubs = await this.checkAllSubscriptions(ctx, user);
 
     if (notChannelSubs.length === 0) {
       if (mode === 'first') {
