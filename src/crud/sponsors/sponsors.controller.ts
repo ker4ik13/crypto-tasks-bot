@@ -42,21 +42,49 @@ export class SponsorsController {
     return this.sponsorsService.findStart();
   }
 
-  @Get(':id')
+  @Get('byId/:id')
   findById(@Param('id') id: string) {
     return this.sponsorsService.findById(+id);
   }
 
-  @Patch(':id')
+  @Get('bySlug/:slug')
+  findBySlug(@Param('slug') slug: string) {
+    return this.sponsorsService.findBySlug(slug);
+  }
+
+  @Patch('byId/:id')
   updateById(
     @Param('id') id: string,
     @Body() dto: Prisma.SponsorChannelUpdateInput,
   ) {
-    return this.sponsorsService.updateById(+id, dto);
+    const newDto = {
+      ...dto,
+    };
+    if (dto.expirationDate) {
+      newDto.expirationDate = new Date(
+        dto.expirationDate.toString(),
+      ).toISOString();
+    }
+    return this.sponsorsService.updateById(+id, newDto);
+  }
+  @Patch('bySlug/:slug')
+  updateBySlug(
+    @Param('slug') slug: string,
+    @Body() dto: Prisma.SponsorChannelUpdateInput,
+  ) {
+    const newDto = {
+      ...dto,
+    };
+    if (dto.expirationDate) {
+      newDto.expirationDate = new Date(
+        dto.expirationDate.toString(),
+      ).toISOString();
+    }
+    return this.sponsorsService.updateBySlug(slug, newDto);
   }
 
-  @Delete(':id')
-  removeById(@Param('id') id: string) {
-    return this.sponsorsService.removeById(+id);
+  @Delete('bySlug/:slug')
+  removeBySlug(@Param('slug') slug: string) {
+    return this.sponsorsService.removeBySlug(slug);
   }
 }

@@ -26,10 +26,8 @@ export class SponsorsService {
     return await this.database.sponsorChannel.findMany({
       orderBy: { expirationDate: 'asc' },
       include: {
-        subsUsers: {
-          include: {
-            _count: true,
-          },
+        _count: {
+          select: { subsUsers: true },
         },
       },
     });
@@ -79,10 +77,9 @@ export class SponsorsService {
     const channel = await this.database.sponsorChannel.findUnique({
       where: { id },
       include: {
-        subsUsers: {
-          include: {
-            _count: true,
-          },
+        subsUsers: true,
+        _count: {
+          select: { subsUsers: true },
         },
       },
     });
@@ -103,6 +100,9 @@ export class SponsorsService {
       where: { channelSlug: slug },
       include: {
         subsUsers: true,
+        _count: {
+          select: { subsUsers: true },
+        },
       },
     });
 
@@ -208,6 +208,11 @@ export class SponsorsService {
       data: {
         ...dto,
       },
+      include: {
+        _count: {
+          select: { subsUsers: true },
+        },
+      },
     });
   }
 
@@ -220,12 +225,22 @@ export class SponsorsService {
       data: {
         ...dto,
       },
+      include: {
+        _count: {
+          select: { subsUsers: true },
+        },
+      },
     });
   }
 
   async removeById(id: number): Promise<SponsorChannel> {
     return await this.database.sponsorChannel.delete({
       where: { id },
+    });
+  }
+  async removeBySlug(slug: string): Promise<SponsorChannel> {
+    return await this.database.sponsorChannel.delete({
+      where: { channelSlug: slug },
     });
   }
 }
