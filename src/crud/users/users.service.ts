@@ -234,6 +234,13 @@ export class UsersService {
     if (!user) return false;
     if (!user.id) return false;
 
+    if (user.isBlockedTheBot) {
+      await this.database.user.update({
+        where: { id: user.id },
+        data: { isBlockedTheBot: false },
+      });
+    }
+
     return true;
   }
 

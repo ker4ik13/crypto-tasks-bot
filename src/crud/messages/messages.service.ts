@@ -30,13 +30,6 @@ export class MessagesService {
   async sendMessageAllUsers(message: ICustomMessage) {
     const users = await this.database.user.findMany({
       orderBy: { createdDate: 'desc' },
-      include: {
-        referral: {
-          include: {
-            invitedUsers: true,
-          },
-        },
-      },
     });
 
     if (!users || users.length === 0) {
@@ -59,7 +52,7 @@ export class MessagesService {
       for (const user of users) {
         // Если заблокировал бота
         if (user.isBlockedTheBot) {
-          return;
+          continue;
         }
 
         if (message.photos.length === 1) {
@@ -115,6 +108,11 @@ export class MessagesService {
     }
 
     for (const user of users) {
+      // Если заблокировал бота
+      if (user.isBlockedTheBot) {
+        continue;
+      }
+
       try {
         await this.bot.telegram.sendMessage(+user.telegramId, message.message, {
           parse_mode: 'HTML',
