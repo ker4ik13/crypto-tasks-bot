@@ -1,4 +1,5 @@
 import { BotAlerts } from '@/bot/messages';
+import { getNormalChatId } from '@/lib/helpers';
 import { ICustomError } from '@/lib/types';
 import { Injectable } from '@nestjs/common';
 import type { Prisma, SponsorChannel, User } from '@prisma/client';
@@ -159,7 +160,7 @@ export class SponsorsService {
       }
 
       const member = await ctx.telegram.getChatMember(
-        `@${channelSlug}`,
+        getNormalChatId(channelSlug),
         ctx.from.id,
       );
 

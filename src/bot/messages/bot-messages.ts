@@ -5,7 +5,7 @@ import {
   DEFAULT_TELEGRAM_BOT_USERNAME,
   MIN_WITHDRAWAL_AMOUNT,
 } from '@/lib/common';
-import { beautyCurrency } from '@/lib/helpers';
+import { beautyCurrency, getNormalChannelLink } from '@/lib/helpers';
 import { UserWithReferral } from '@/lib/types';
 import { emojis } from '@/lib/utils';
 import { SponsorChannel, User } from '@prisma/client';
@@ -47,7 +47,7 @@ export const BotMessages = {
       .join('\n')}`;
   },
   newTask: (channel: SponsorChannel, currency = DEFAULT_CURRENCY) => {
-    return `${emojis.passport} <b>ID задания:</b> ${channel.id}\n${emojis.bagOfMoney} <b>Вознаграждение:</b> ${beautyCurrency(channel.reward)} ${currency}\n\n${emojis.search} Подпишитесь на канал <b>@${channel.channelSlug}</b> для выполнения задания.`;
+    return `${emojis.passport} <b>ID задания:</b> ${channel.id}\n${emojis.bagOfMoney} <b>Вознаграждение:</b> ${beautyCurrency(channel.reward)} ${currency}\n\n${emojis.search} Подпишитесь на канал <b>${getNormalChannelLink(channel)}</b> для выполнения задания.`;
   },
   taskReward: (channel: SponsorChannel, currency = DEFAULT_CURRENCY) => {
     return `Вам начислено ${beautyCurrency(channel.reward)} ${currency} за выполнение задания.`;

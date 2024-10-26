@@ -5,6 +5,7 @@ import {
   DEFAULT_REWARD_FOR_A_FRIEND,
   ENV_NAMES,
 } from '@/lib/common';
+import { getNormalChatId } from '@/lib/helpers';
 import { IAdminMessage } from '@/lib/types';
 import { emojis } from '@/lib/utils';
 import { BadGatewayException, Injectable } from '@nestjs/common';
@@ -89,7 +90,7 @@ export class BotService {
       for (const channel of channels) {
         try {
           const member = await ctx.telegram.getChatMember(
-            `@${channel.channelSlug}`,
+            getNormalChatId(channel.channelSlug),
             ctx.from.id,
           );
 
