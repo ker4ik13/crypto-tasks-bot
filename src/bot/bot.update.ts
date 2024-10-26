@@ -1,3 +1,4 @@
+import { CheckSubscription } from '@/auth/decorators';
 import { ReferralsService, SponsorsService, UsersService } from '@/crud';
 import { ENV_NAMES } from '@/lib/common';
 import { getValueFromAction } from '@/lib/helpers';
@@ -93,13 +94,8 @@ export class BotUpdate {
   }
 
   @Action('cabinet')
+  @CheckSubscription()
   async cabinet(@Ctx() ctx: SceneContext) {
-    const notSubsChannels = await this.botService.checkChannelsSubs(ctx);
-
-    if (notSubsChannels.length > 0) {
-      return;
-    }
-
     const user = await this.usersService.findByTelegramId(
       ctx.from.id.toString(),
     );
@@ -127,13 +123,8 @@ export class BotUpdate {
   }
 
   @Action('withdraw')
+  @CheckSubscription()
   async withdraw(@Ctx() ctx: SceneContext) {
-    const notSubsChannels = await this.botService.checkChannelsSubs(ctx);
-
-    if (notSubsChannels.length > 0) {
-      return;
-    }
-
     const user = await this.usersService.findByTelegramId(
       ctx.from.id.toString(),
     );
@@ -185,13 +176,8 @@ export class BotUpdate {
   }
 
   @Action('partners')
+  @CheckSubscription()
   async partners(@Ctx() ctx: SceneContext) {
-    const notSubsChannels = await this.botService.checkChannelsSubs(ctx);
-
-    if (notSubsChannels.length > 0) {
-      return;
-    }
-
     const user = await this.usersService.findByTelegramIdWithReferral(
       ctx.from.id.toString(),
     );
@@ -237,13 +223,8 @@ export class BotUpdate {
   }
 
   @Action('tasks')
+  @CheckSubscription()
   async tasks(@Ctx() ctx: SceneContext) {
-    const notSubsChannels = await this.botService.checkChannelsSubs(ctx);
-
-    if (notSubsChannels.length > 0) {
-      return;
-    }
-
     const user = await this.usersService.findByTelegramIdWithReferral(
       ctx.from.id.toString(),
     );
@@ -302,8 +283,8 @@ export class BotUpdate {
     const isUserSubscribedOnChannel =
       await this.sponsorsService.checkUserSubscription(ctx, channelSlug);
 
-    if (!isUserSubscribedOnChannel) {
-      await ctx.answerCbQuery(BotAlerts.notSubscribed, {
+    if (isUserSubscribedOnChannel && isUserSubscribedOnChannel.isError) {
+      await ctx.answerCbQuery(isUserSubscribedOnChannel.message, {
         show_alert: true,
       });
       return;
@@ -334,13 +315,8 @@ export class BotUpdate {
   }
 
   @Action('information')
+  @CheckSubscription()
   async information(@Ctx() ctx: SceneContext) {
-    const notSubsChannels = await this.botService.checkChannelsSubs(ctx);
-
-    if (notSubsChannels.length > 0) {
-      return;
-    }
-
     const user = await this.usersService.findByTelegramIdWithReferral(
       ctx.from.id.toString(),
     );
@@ -404,13 +380,8 @@ export class BotUpdate {
   }
 
   @Action('top-ref-users')
+  @CheckSubscription()
   async topRefUsers(@Ctx() ctx: SceneContext) {
-    const notSubsChannels = await this.botService.checkChannelsSubs(ctx);
-
-    if (notSubsChannels.length > 0) {
-      return;
-    }
-
     const user = await this.usersService.findByTelegramIdWithReferral(
       ctx.from.id.toString(),
     );

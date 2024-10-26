@@ -1,5 +1,7 @@
+import { BotAlerts } from '@/bot/messages';
+import { ICustomError } from '@/lib/types';
 import { Injectable } from '@nestjs/common';
-import type { Prisma, SponsorChannel } from '@prisma/client';
+import type { Prisma, SponsorChannel, User } from '@prisma/client';
 import type { Context } from 'telegraf';
 import type { SceneContext, WizardContext } from 'telegraf/scenes';
 import { DatabaseService } from '../database/database.service';
@@ -35,7 +37,12 @@ export class SponsorsService {
 
   async findStart(): Promise<SponsorChannel[] | null> {
     return await this.database.sponsorChannel.findMany({
-      where: { OR: [{ type: 'start' }, { type: 'all' }] },
+      where: {
+        AND: { OR: [{ type: 'start' }, { type: 'all' }], isActive: true },
+        expirationDate: {
+          gte: new Date().toISOString(),
+        },
+      },
       orderBy: { expirationDate: 'asc' },
       include: {
         subsUsers: {
@@ -49,7 +56,12 @@ export class SponsorsService {
 
   async findTasks(): Promise<SponsorChannel[] | null> {
     return await this.database.sponsorChannel.findMany({
-      where: { OR: [{ type: 'task' }, { type: 'all' }] },
+      where: {
+        AND: { OR: [{ type: 'task' }, { type: 'all' }], isActive: true },
+        expirationDate: {
+          gte: new Date().toISOString(),
+        },
+      },
       orderBy: { expirationDate: 'asc' },
       include: {
         subsUsers: {
@@ -82,17 +94,15 @@ export class SponsorsService {
     return channel;
   }
 
-  async findBySlug(slug: string): Promise<SponsorChannel | null> {
+  async findBySlug(
+    slug: string,
+  ): Promise<(SponsorChannel & { subsUsers: User[] }) | null> {
     if (!slug) return null;
 
     const channel = await this.database.sponsorChannel.findUnique({
       where: { channelSlug: slug },
       include: {
-        subsUsers: {
-          include: {
-            _count: true,
-          },
-        },
+        subsUsers: true,
       },
     });
 
@@ -106,16 +116,19 @@ export class SponsorsService {
   async getTaskForUser(telegramId: string) {
     const neededTask = await this.database.sponsorChannel.findFirst({
       where: {
+        isActive: true,
+        type: {
+          in: ['all', 'task'],
+        },
+        expirationDate: {
+          gte: new Date().toISOString(),
+        },
         NOT: {
           subsUsers: {
             some: {
-              telegramId,
+              telegramId: telegramId,
             },
           },
-          // FIXME: add filter for active task
-          // isActive: {
-          //   equals: true,
-          // },
         },
       },
     });
@@ -130,8 +143,21 @@ export class SponsorsService {
   async checkUserSubscription(
     ctx: Context | WizardContext | SceneContext,
     channelSlug: string,
-  ) {
+  ): Promise<ICustomError> {
     try {
+      // Проверка на повторную проверку
+      const channel = await this.findBySlug(channelSlug);
+      if (
+        channel.subsUsers.some(
+          (user) => user.telegramId === ctx.from.id.toString(),
+        )
+      ) {
+        return {
+          isError: true,
+          message: BotAlerts.alreadySubscribed,
+        };
+      }
+
       const member = await ctx.telegram.getChatMember(
         `@${channelSlug}`,
         ctx.from.id,
@@ -142,7 +168,10 @@ export class SponsorsService {
         member.status != 'administrator' &&
         member.status != 'creator'
       ) {
-        return false;
+        return {
+          isError: true,
+          message: BotAlerts.notSubscribed,
+        };
       }
 
       this.updateBySlug(channelSlug, {
@@ -153,7 +182,9 @@ export class SponsorsService {
         },
       });
 
-      return true;
+      return {
+        isError: false,
+      };
     } catch (error) {
       throw new Error('Ошибка в sponsors.service.ts:checkUserSubscription');
     }

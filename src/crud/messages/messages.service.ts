@@ -58,42 +58,60 @@ export class MessagesService {
     if (message.photos && message.photos.length >= 1) {
       for (const user of users) {
         if (message.photos.length === 1) {
-          await this.bot.telegram.sendPhoto(
-            +user.telegramId,
-            {
-              url: message.photos[0].url,
-            },
-            {
-              caption: message.message,
-              parse_mode: 'HTML',
-              reply_markup: replyKeyboard,
-            },
-          );
+          try {
+            await this.bot.telegram.sendPhoto(
+              +user.telegramId,
+              {
+                url: message.photos[0].url,
+              },
+              {
+                caption: message.message,
+                parse_mode: 'HTML',
+                reply_markup: replyKeyboard,
+              },
+            );
+          } catch (error) {
+            console.log(
+              `Пользователь ${user.telegramId} (@${user.username}) не получил сообщения из за блокировки бота`,
+            );
+          }
         } else {
-          await this.bot.telegram.sendMediaGroup(
-            +user.telegramId,
-            message.photos.map((photo, index) => {
-              return {
-                media: photo.url,
-                type: photo.type,
-                caption: index === 0 ? photo.caption : undefined,
-              };
-            }),
-            {
-              parse_mode: 'HTML',
-              reply_markup: replyKeyboard,
-            } as any,
-          );
+          try {
+            await this.bot.telegram.sendMediaGroup(
+              +user.telegramId,
+              message.photos.map((photo, index) => {
+                return {
+                  media: photo.url,
+                  type: photo.type,
+                  caption: index === 0 ? photo.caption : undefined,
+                };
+              }),
+              {
+                parse_mode: 'HTML',
+                reply_markup: replyKeyboard,
+              } as any,
+            );
+          } catch (error) {
+            console.log(
+              `Пользователь ${user.telegramId} (@${user.username}) не получил сообщения из за блокировки бота`,
+            );
+          }
         }
       }
       return;
     }
 
     for (const user of users) {
-      await this.bot.telegram.sendMessage(+user.telegramId, message.message, {
-        parse_mode: 'HTML',
-        reply_markup: replyKeyboard,
-      });
+      try {
+        await this.bot.telegram.sendMessage(+user.telegramId, message.message, {
+          parse_mode: 'HTML',
+          reply_markup: replyKeyboard,
+        });
+      } catch (error) {
+        console.log(
+          `Пользователь ${user.telegramId} (@${user.username}) не получил сообщения из за блокировки бота`,
+        );
+      }
     }
 
     return;
@@ -103,9 +121,15 @@ export class MessagesService {
     // return await bot.telegram.sendMessage(chatId, message, {
     //   parse_mode: 'HTML',
     // });
-    await this.bot.telegram.sendMessage(chatId, message, {
-      parse_mode: 'HTML',
-    });
+    try {
+      await this.bot.telegram.sendMessage(chatId, message, {
+        parse_mode: 'HTML',
+      });
+    } catch (error) {
+      console.log(
+        `Пользователь ${chatId} не получил сообщения из за блокировки бота`,
+      );
+    }
 
     return;
   }
