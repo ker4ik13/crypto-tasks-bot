@@ -19,6 +19,16 @@ export class UsersController {
     return this.usersService.create(dto);
   }
 
+  @Get('active')
+  findAllActiveUsers() {
+    return this.usersService.findAllActiveUsers();
+  }
+
+  @Get('blocked-the-bot')
+  findAllUsersBlockedTheBot() {
+    return this.usersService.findAllUsersBlockedTheBot();
+  }
+
   @Get()
   findAll() {
     return this.usersService.findAll();

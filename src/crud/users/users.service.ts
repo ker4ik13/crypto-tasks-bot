@@ -85,6 +85,29 @@ export class UsersService {
     });
   }
 
+  async findAllActiveUsers() {
+    return await this.database.user.count({
+      where: {
+        currentBalance: {
+          not: 0,
+        },
+        isBlockedTheBot: {
+          equals: false,
+        },
+      },
+    });
+  }
+
+  async findAllUsersBlockedTheBot() {
+    return await this.database.user.count({
+      where: {
+        isBlockedTheBot: {
+          equals: true,
+        },
+      },
+    });
+  }
+
   async findById(id: number): Promise<User | null> {
     if (!id) return null;
 
