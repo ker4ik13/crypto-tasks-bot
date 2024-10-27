@@ -36,7 +36,7 @@ export const ENV_NAMES = {
 export const DEFAULT_CURRENCY =
   process.env[ENV_NAMES.TELEGRAM_BOT_CURRENCY] || 'USDT';
 export const DEFAULT_REWARD_FOR_A_FRIEND =
-  +process.env[ENV_NAMES.REWARD_FOR_A_FRIEND] || 0.02;
+  +process.env[ENV_NAMES.REWARD_FOR_A_FRIEND];
 export const DEFAULT_MIN_WITHDRAWAL_AMOUNT =
   +process.env[ENV_NAMES.MIN_WITHDRAWAL_AMOUNT];
 

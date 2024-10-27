@@ -153,7 +153,7 @@ export class BotUpdate {
       adminUsername: this.configService.get(ENV_NAMES.ADMIN_USERNAME),
     };
 
-    if (user.currentBalance < 2) {
+    if (user.currentBalance < botSettings.minWithdraw) {
       await ctx.answerCbQuery(
         BotAlerts.minWithdrawal(botSettings.minWithdraw, botSettings.currency),
         {

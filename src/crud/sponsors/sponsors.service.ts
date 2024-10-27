@@ -188,7 +188,7 @@ export class SponsorsService {
       };
     } catch (error) {
       throw new Error(
-        `Ошибка в sponsors.service.ts:checkUserSubscription\n\n${error}`,
+        `Ошибка в sponsors.service.ts:checkUserSubscription\n\n${error}\n\nКанал: ${channelSlug}, пользователь: ${ctx.from.id}`,
       );
     }
   }
