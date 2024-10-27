@@ -187,7 +187,9 @@ export class SponsorsService {
         isError: false,
       };
     } catch (error) {
-      throw new Error('Ошибка в sponsors.service.ts:checkUserSubscription');
+      throw new Error(
+        `Ошибка в sponsors.service.ts:checkUserSubscription\n\n${error}`,
+      );
     }
   }
 
