@@ -1,9 +1,10 @@
 import { ENV_NAMES } from '@lib/common/constants';
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TelegrafModule } from 'nestjs-telegraf';
 import { session } from 'telegraf';
 import { DatabaseModule } from '../database';
+import { UsersModule } from '../users';
 import { MessagesController } from './messages.controller';
 import { MessagesService } from './messages.service';
 
@@ -22,6 +23,7 @@ import { MessagesService } from './messages.service';
         middlewares: [session()],
       }),
     }),
+    forwardRef(() => UsersModule),
   ],
   controllers: [MessagesController],
   providers: [MessagesService],

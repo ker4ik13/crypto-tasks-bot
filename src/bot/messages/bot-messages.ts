@@ -56,4 +56,17 @@ export const BotMessages = {
     return `Вам начислено ${beautyCurrency(channel.reward)} ${currency} за выполнение задания.`;
   },
   noTasks: `${emojis.warning} Заданий больше нет. <b>Делитесь ботом</b> с друзьями и приходите позже!`,
+  setNullBalance: (
+    user: User,
+    maxWarningCount: number,
+    currency = DEFAULT_CURRENCY,
+    admin = DEFAULT_ADMIN_USERNAME,
+  ) =>
+    `${emojis.warning} <b>Ваш баланс был сброшен до 0 ${currency} за нарушение правил.</b>\n${emojis.user} Количество предупреждений: ${user.warningsCount}\n\nПри ${maxWarningCount}/${maxWarningCount} предупреждений вы будете заблокированы ${emojis.blick}\n<b>Подробнее:</b> @${admin}`,
+  maxWarnings: (
+    user: User,
+    maxWarningCount: number,
+    admin = DEFAULT_ADMIN_USERNAME,
+  ) =>
+    `<b>${emojis.warning} Вы достигли лимита предупреждений: ${user.warningsCount}/${maxWarningCount}</b>\n\n${emojis.blick} Доступ к боту ограничен.\n\n<b>Подробнее:</b> @${admin}`,
 };

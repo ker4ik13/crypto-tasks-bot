@@ -20,6 +20,7 @@ model User {
   payments        Payment[]
   createdDate     DateTime  @default(now()) @db.Date
   isBlockedTheBot Boolean?  @default(false)
+  warningsCount   Int       @default(0)
 
   // Пользователь, который пригласил данного пользователя (через реферальный код)
   invitedBy   Referral? @relation("InvitedUsers", fields: [invitedById], references: [id])

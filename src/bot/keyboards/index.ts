@@ -5,4 +5,5 @@ export * from './main.keyboard';
 export * from './share.keyboard';
 export * from './tasks.keyboard';
 export * from './top-refs.keyboard';
+export * from './warning.keyboard';
 export * from './withdraw.keyboard';

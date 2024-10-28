@@ -6,8 +6,11 @@ import { WalletService } from './wallet.service';
 export class WalletController {
   constructor(private readonly walletService: WalletService) {}
 
-  @Patch(':id')
-  updateById(@Param('id') id: string, @Body() dto: WithdrawDto) {
-    return this.walletService.withdrawByTelegramId(id, dto.amount);
+  @Patch(':telegramId')
+  updateById(
+    @Param('telegramId') telegramId: string,
+    @Body() dto: WithdrawDto,
+  ) {
+    return this.walletService.withdrawByTelegramId(telegramId, dto.amount);
   }
 }

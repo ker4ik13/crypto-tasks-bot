@@ -14,6 +14,7 @@ export class ReferralsService {
     @Inject(forwardRef(() => UsersService))
     private readonly usersService: UsersService,
     private readonly configService: ConfigService,
+    @Inject(forwardRef(() => MessagesService))
     private readonly messagesService: MessagesService,
   ) {}
 

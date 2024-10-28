@@ -1,12 +1,18 @@
-import { UserWithReferral } from '@/lib/types';
+import { warningKeyboard } from '@/bot/keyboards';
+import { BotAdminMessages, BotMessages } from '@/bot/messages';
+import { ENV_NAMES } from '@/lib/common';
+import { ICustomError, UserWithReferral } from '@/lib/types';
 import {
   ConflictException,
   forwardRef,
   Inject,
   Injectable,
+  NotFoundException,
 } from '@nestjs/common';
-import type { Prisma, SponsorChannel, User } from '@prisma/client';
+import { ConfigService } from '@nestjs/config';
+import type { Prisma, User } from '@prisma/client';
 import { DatabaseService } from '../database/database.service';
+import { MessagesService } from '../messages';
 import { ReferralsService } from '../referrals';
 
 @Injectable()
@@ -15,6 +21,9 @@ export class UsersService {
     private readonly database: DatabaseService,
     @Inject(forwardRef(() => ReferralsService))
     private readonly referralsService: ReferralsService,
+    @Inject(forwardRef(() => MessagesService))
+    private readonly messagesService: MessagesService,
+    private readonly configService: ConfigService,
   ) {}
 
   async create(dto: Prisma.UserCreateInput): Promise<User> {
@@ -72,117 +81,6 @@ export class UsersService {
     return returnedUser;
   }
 
-  async findAll(): Promise<User[] | null> {
-    return await this.database.user.findMany({
-      orderBy: { createdDate: 'desc' },
-      include: {
-        referral: {
-          include: {
-            invitedUsers: true,
-          },
-        },
-      },
-    });
-  }
-
-  async findAllActiveUsers() {
-    return await this.database.user.count({
-      where: {
-        currentBalance: {
-          not: 0,
-        },
-        isBlockedTheBot: {
-          equals: false,
-        },
-      },
-    });
-  }
-
-  async findAllUsersBlockedTheBot() {
-    return await this.database.user.count({
-      where: {
-        isBlockedTheBot: {
-          equals: true,
-        },
-      },
-    });
-  }
-
-  async findById(id: number): Promise<User | null> {
-    if (!id) return null;
-
-    const user = await this.database.user.findUnique({
-      where: { id },
-      include: {
-        referral: {
-          include: {
-            _count: true,
-          },
-        },
-        sponsorChannels: true,
-      },
-    });
-
-    if (!user) {
-      return null;
-    }
-
-    return user;
-  }
-
-  async getTotalCountOfUsers(): Promise<number> {
-    return await this.database.user.count();
-  }
-
-  async getTotalWithdrawalAmount(): Promise<number> {
-    const sum = await this.database.user.aggregate({
-      _sum: {
-        outputBalance: true,
-      },
-    });
-
-    return sum._sum.outputBalance || 0;
-  }
-
-  async getTopRefsUsers(limit = 15): Promise<UserWithReferral[]> {
-    return await this.database.user.findMany({
-      orderBy: { referral: { invitedUsers: { _count: 'desc' } } },
-      where: {
-        referral: {
-          invitedUsers: {
-            some: {}, // Проверяет, что хотя бы один элемент существует
-          },
-        },
-      },
-      include: {
-        referral: {
-          include: {
-            invitedUsers: true,
-          },
-        },
-      },
-      take: limit,
-    });
-  }
-
-  async addRewardToUserFromSubscription(
-    telegramId: string,
-    channel: SponsorChannel,
-  ) {
-    const updatedUser = await this.database.user.update({
-      where: { telegramId },
-      data: {
-        currentBalance: {
-          increment: channel.reward,
-        },
-      },
-    });
-
-    if (!updatedUser) return null;
-
-    return updatedUser;
-  }
-
   async findByTelegramId(telegramId: string): Promise<User | null> {
     if (!telegramId) return null;
 
@@ -209,6 +107,11 @@ export class UsersService {
         referral: {
           include: {
             invitedUsers: true,
+            _count: {
+              select: {
+                invitedUsers: true,
+              },
+            },
           },
         },
       },
@@ -293,20 +196,131 @@ export class UsersService {
     return await this.database.user.update({
       where: { id },
       data: dto,
+      include: {
+        referral: {
+          include: {
+            _count: {
+              select: {
+                invitedUsers: true,
+              },
+            },
+          },
+        },
+      },
     });
+  }
+
+  async updateByTelegramId(
+    telegramId: string,
+    dto: Prisma.UserUpdateInput,
+  ): Promise<User> {
+    return await this.database.user.update({
+      where: { telegramId },
+      data: dto,
+      include: {
+        referral: {
+          include: {
+            _count: {
+              select: {
+                invitedUsers: true,
+              },
+            },
+          },
+        },
+      },
+    });
+  }
+
+  async setNullBalanceByTelegramId(telegramId: string): Promise<User> {
+    const updatedUser = await this.database.user.update({
+      where: { telegramId },
+      data: {
+        currentBalance: 0,
+        warningsCount: {
+          increment: 1,
+        },
+      },
+      include: {
+        referral: {
+          include: {
+            _count: {
+              select: {
+                invitedUsers: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!updatedUser) {
+      await this.messagesService.sendAdminMessage(
+        BotAdminMessages.setNullBalanceNotFoundUser(telegramId),
+      );
+      throw new NotFoundException(
+        BotAdminMessages.setNullBalanceError(telegramId),
+      );
+    }
+
+    const admin = await this.configService.get(ENV_NAMES.ADMIN_USERNAME);
+    const maxWarningCount = await this.configService.get(
+      ENV_NAMES.MAX_WARNING_COUNT,
+    );
+    const currency = await this.configService.get(
+      ENV_NAMES.TELEGRAM_BOT_CURRENCY,
+    );
+
+    await this.messagesService.sendMessageByChatId(
+      +telegramId,
+      BotMessages.setNullBalance(updatedUser, maxWarningCount, currency, admin),
+      {
+        inline_keyboard: warningKeyboard(),
+      },
+    );
+
+    return;
+  }
+
+  async checkWarnings(telegramId: string): Promise<ICustomError> {
+    const user = await this.database.user.findUnique({
+      where: { telegramId },
+    });
+
+    if (!user) {
+      return {
+        isError: false,
+      };
+    }
+
+    const maxWarningCount = await this.configService.get(
+      ENV_NAMES.MAX_WARNING_COUNT,
+    );
+    const admin = await this.configService.get(ENV_NAMES.ADMIN_USERNAME);
+
+    if (user.warningsCount >= maxWarningCount) {
+      return {
+        isError: true,
+        message: BotMessages.maxWarnings(user, maxWarningCount, admin),
+      };
+    }
+
+    return {
+      isError: false,
+    };
   }
 
   async removeById(id: number): Promise<User> {
     return await this.database.user.delete({
       where: { id },
-    });
-  }
-
-  async findAllAdmins(): Promise<(User | null)[]> {
-    return await this.database.user.findMany({
-      where: {
-        isAdmin: {
-          equals: true,
+      include: {
+        referral: {
+          include: {
+            _count: {
+              select: {
+                invitedUsers: true,
+              },
+            },
+          },
         },
       },
     });

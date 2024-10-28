@@ -1,5 +1,6 @@
-import { CheckSubscription } from '@/auth/decorators';
+import { CheckSubscription, CheckWarnings } from '@/auth/decorators';
 import { ReferralsService, SponsorsService, UsersService } from '@/crud';
+import { UsersFindService } from '@/crud/users/users-find.service';
 import { ENV_NAMES } from '@/lib/common';
 import { getValueFromAction } from '@/lib/helpers';
 import { emojis } from '@/lib/utils';
@@ -25,6 +26,7 @@ export class BotUpdate {
   constructor(
     private readonly botService: BotService,
     private readonly usersService: UsersService,
+    private readonly usersFindService: UsersFindService,
     private readonly configService: ConfigService,
     private readonly referralService: ReferralsService,
     private readonly sponsorsService: SponsorsService,
@@ -68,6 +70,7 @@ export class BotUpdate {
 
   @Action('main-menu')
   @Start()
+  @CheckWarnings()
   async start(@Ctx() ctx: SceneContext) {
     const isUserExist = await this.usersService.isUserExist(ctx.from.id);
 
@@ -99,6 +102,7 @@ export class BotUpdate {
   }
 
   @Action('cabinet')
+  @CheckWarnings()
   @CheckSubscription()
   async cabinet(@Ctx() ctx: SceneContext) {
     const user = await this.usersService.findByTelegramId(
@@ -128,6 +132,7 @@ export class BotUpdate {
   }
 
   @Action('withdraw')
+  @CheckWarnings()
   @CheckSubscription()
   async withdraw(@Ctx() ctx: SceneContext) {
     const user = await this.usersService.findByTelegramId(
@@ -181,6 +186,7 @@ export class BotUpdate {
   }
 
   @Action('partners')
+  @CheckWarnings()
   @CheckSubscription()
   async partners(@Ctx() ctx: SceneContext) {
     const user = await this.usersService.findByTelegramIdWithReferral(
@@ -228,6 +234,7 @@ export class BotUpdate {
   }
 
   @Action('tasks')
+  @CheckWarnings()
   @CheckSubscription()
   async tasks(@Ctx() ctx: SceneContext) {
     const user = await this.usersService.findByTelegramIdWithReferral(
@@ -282,6 +289,7 @@ export class BotUpdate {
   }
 
   @Action(/tasks-check\|([a-zA-Z0-9_-]+)/)
+  @CheckWarnings()
   async taskById(@Ctx() ctx: SceneContext) {
     const channelSlug = getValueFromAction(ctx);
 
@@ -320,6 +328,7 @@ export class BotUpdate {
   }
 
   @Action('information')
+  @CheckWarnings()
   @CheckSubscription()
   async information(@Ctx() ctx: SceneContext) {
     const user = await this.usersService.findByTelegramIdWithReferral(
@@ -366,8 +375,9 @@ export class BotUpdate {
       });
     }
 
-    const numberOfUsers = await this.usersService.getTotalCountOfUsers();
-    const totalWithdrawal = await this.usersService.getTotalWithdrawalAmount();
+    const numberOfUsers = await this.usersFindService.getTotalCountOfUsers();
+    const totalWithdrawal =
+      await this.usersFindService.getTotalWithdrawalAmount();
 
     await ctx.reply(
       BotMessages.information(
@@ -400,6 +410,7 @@ export class BotUpdate {
   }
 
   @Action('top-ref-users')
+  @CheckWarnings()
   @CheckSubscription()
   async topRefUsers(@Ctx() ctx: SceneContext) {
     const user = await this.usersService.findByTelegramIdWithReferral(
@@ -425,7 +436,7 @@ export class BotUpdate {
       botUsername: this.configService.get(ENV_NAMES.TELEGRAM_BOT_USERNAME),
     };
 
-    const topRefs = await this.usersService.getTopRefsUsers();
+    const topRefs = await this.usersFindService.getTopRefsUsers();
 
     await ctx.reply(BotMessages.topRefs(topRefs), {
       parse_mode: 'HTML',

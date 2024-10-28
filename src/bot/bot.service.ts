@@ -1,4 +1,5 @@
-import { SponsorsService, UsersService } from '@/crud';
+import { SponsorsService } from '@/crud';
+import { UsersFindService } from '@/crud/users/users-find.service';
 import {
   CHATS,
   DEFAULT_CURRENCY,
@@ -6,9 +7,8 @@ import {
   ENV_NAMES,
 } from '@/lib/common';
 import { getNormalChatId } from '@/lib/helpers';
-import { IAdminMessage } from '@/lib/types';
 import { emojis } from '@/lib/utils';
-import { BadGatewayException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { SponsorChannel, User } from '@prisma/client';
 import { InjectBot } from 'nestjs-telegraf';
@@ -23,7 +23,7 @@ export class BotService {
     @InjectBot() private readonly bot: Telegraf<Context>,
     private readonly sponsorsService: SponsorsService,
     private readonly configService: ConfigService,
-    private readonly usersService: UsersService,
+    private readonly usersFindService: UsersFindService,
   ) {}
 
   async checkAllSubscriptions(
@@ -150,37 +150,5 @@ export class BotService {
     return this.bot.telegram.sendMessage(chatId, message, {
       parse_mode: 'HTML',
     });
-  }
-
-  async sendAdminMessage(message: IAdminMessage) {
-    try {
-      const admins = await this.usersService.findAllAdmins();
-
-      if (!admins || !admins.length) {
-        return;
-      }
-
-      let botMessage = `<b>${message.title}</b>\n`;
-
-      for (const text in message.text) {
-        botMessage += `\n<b>${text}</b>: ${message.text[text]}`;
-      }
-
-      for (const admin of admins) {
-        // if (!admin.settings.sendNewClaimMessages) {
-        //   continue;
-        // }
-
-        await this.bot.telegram.sendMessage(+admin.id.toString(), botMessage, {
-          parse_mode: 'HTML',
-        });
-      }
-
-      return true;
-    } catch (error) {
-      return new BadGatewayException({
-        message: 'Не удалось отправить сообщение админам',
-      });
-    }
   }
 }

@@ -13,6 +13,7 @@ export const ENV_NAMES = {
   TELEGRAM_BOT_CURRENCY: 'TELEGRAM_BOT_CURRENCY',
   REWARD_FOR_A_FRIEND: 'REWARD_FOR_A_FRIEND',
   MIN_WITHDRAWAL_AMOUNT: 'MIN_WITHDRAWAL_AMOUNT',
+  MAX_WARNING_COUNT: 'MAX_WARNING_COUNT',
   NODE_ENV: 'NODE_ENV',
   ENV_PATH: (mode?: 'development' | 'production' | 'test' | string) => {
     if (!mode) return '.env';

@@ -8,35 +8,49 @@ import {
   Post,
 } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
+import { UsersFindService } from './users-find.service';
 import { UsersService } from './users.service';
 
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(
+    private readonly usersService: UsersService,
+    private readonly usersFindService: UsersFindService,
+  ) {}
 
   @Post()
   create(@Body() dto: Prisma.UserCreateInput) {
     return this.usersService.create(dto);
   }
 
+  @Post('set-null-balance/:telegramId')
+  setNullBalance(@Param('telegramId') telegramId: string) {
+    return this.usersService.setNullBalanceByTelegramId(telegramId);
+  }
+
+  @Get('stats')
+  getStats() {
+    return this.usersFindService.getStats();
+  }
+
   @Get('active')
   findAllActiveUsers() {
-    return this.usersService.findAllActiveUsers();
+    return this.usersFindService.findAllActiveUsers();
   }
 
   @Get('blocked-the-bot')
   findAllUsersBlockedTheBot() {
-    return this.usersService.findAllUsersBlockedTheBot();
+    return this.usersFindService.findAllUsersBlockedTheBot();
   }
 
   @Get()
   findAll() {
-    return this.usersService.findAll();
+    return this.usersFindService.findAll();
   }
 
   @Get(':id')
   findById(@Param('id') id: string) {
-    return this.usersService.findById(+id);
+    return this.usersFindService.findById(+id);
   }
 
   @Get('telegram-id/:telegramId')

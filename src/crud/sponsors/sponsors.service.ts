@@ -7,12 +7,14 @@ import type { Context } from 'telegraf';
 import type { SceneContext, WizardContext } from 'telegraf/scenes';
 import { DatabaseService } from '../database/database.service';
 import { UsersService } from '../users';
+import { WalletService } from '../wallet';
 
 @Injectable()
 export class SponsorsService {
   constructor(
     private readonly database: DatabaseService,
     private readonly usersService: UsersService,
+    private readonly walletService: WalletService,
   ) {}
 
   async create(dto: Prisma.SponsorChannelCreateInput): Promise<SponsorChannel> {
@@ -37,7 +39,12 @@ export class SponsorsService {
   async findStart(): Promise<SponsorChannel[] | null> {
     return await this.database.sponsorChannel.findMany({
       where: {
-        AND: { OR: [{ type: 'start' }, { type: 'all' }], isActive: true },
+        AND: {
+          OR: [{ type: 'start' }, { type: 'all' }],
+          isActive: {
+            equals: true,
+          },
+        },
         expirationDate: {
           gte: new Date().toISOString(),
         },
@@ -56,7 +63,12 @@ export class SponsorsService {
   async findTasks(): Promise<SponsorChannel[] | null> {
     return await this.database.sponsorChannel.findMany({
       where: {
-        AND: { OR: [{ type: 'task' }, { type: 'all' }], isActive: true },
+        AND: {
+          OR: [{ type: 'task' }, { type: 'all' }],
+          isActive: {
+            equals: true,
+          },
+        },
         expirationDate: {
           gte: new Date().toISOString(),
         },
@@ -117,7 +129,9 @@ export class SponsorsService {
   async getTaskForUser(telegramId: string) {
     const neededTask = await this.database.sponsorChannel.findFirst({
       where: {
-        isActive: true,
+        isActive: {
+          equals: true,
+        },
         type: {
           in: ['all', 'task'],
         },
@@ -194,10 +208,11 @@ export class SponsorsService {
   }
 
   async addRewardToUser(dto: { userId: string; channel: SponsorChannel }) {
-    const updatedUser = await this.usersService.addRewardToUserFromSubscription(
-      dto.userId,
-      dto.channel,
-    );
+    const updatedUser =
+      await this.walletService.addRewardToUserFromSubscription(
+        dto.userId,
+        dto.channel,
+      );
 
     return updatedUser;
   }
