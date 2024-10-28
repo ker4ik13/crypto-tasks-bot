@@ -1,7 +1,7 @@
 import { warningKeyboard } from '@/bot/keyboards';
 import { BotAdminMessages, BotMessages } from '@/bot/messages';
 import { ENV_NAMES } from '@/lib/common';
-import { ICustomError, UserWithReferral } from '@/lib/types';
+import { ICustomError } from '@/lib/types';
 import {
   ConflictException,
   forwardRef,
@@ -79,77 +79,6 @@ export class UsersService {
     });
 
     return returnedUser;
-  }
-
-  async findByTelegramId(telegramId: string): Promise<User | null> {
-    if (!telegramId) return null;
-
-    const user = await this.database.user.findUnique({
-      where: { telegramId: telegramId.toString() },
-      include: {
-        referral: true,
-      },
-    });
-
-    if (!user) {
-      return null;
-    }
-
-    return user;
-  }
-
-  async findByIdWithReferral(id: number): Promise<UserWithReferral | null> {
-    if (!id) return null;
-
-    const user = await this.database.user.findUnique({
-      where: { id },
-      include: {
-        referral: {
-          include: {
-            invitedUsers: true,
-            _count: {
-              select: {
-                invitedUsers: true,
-              },
-            },
-          },
-        },
-      },
-    });
-
-    if (!user) {
-      return null;
-    }
-
-    return user;
-  }
-
-  async findByTelegramIdWithReferral(
-    telegramId: string,
-  ): Promise<UserWithReferral | null> {
-    if (!telegramId) return null;
-
-    const user = await this.database.user.findUnique({
-      where: { telegramId },
-      include: {
-        referral: {
-          include: {
-            invitedUsers: true,
-            _count: {
-              select: {
-                invitedUsers: true,
-              },
-            },
-          },
-        },
-      },
-    });
-
-    if (!user) {
-      return null;
-    }
-
-    return user;
   }
 
   async isUserExist(telegramId: number): Promise<boolean> {

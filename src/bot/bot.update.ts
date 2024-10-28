@@ -87,7 +87,7 @@ export class BotUpdate {
       return;
     }
 
-    const user = await this.usersService.findByTelegramId(
+    const user = await this.usersFindService.findByTelegramId(
       ctx.from.id.toString(),
     );
 
@@ -105,7 +105,7 @@ export class BotUpdate {
   @CheckWarnings()
   @CheckSubscription()
   async cabinet(@Ctx() ctx: SceneContext) {
-    const user = await this.usersService.findByTelegramId(
+    const user = await this.usersFindService.findByTelegramId(
       ctx.from.id.toString(),
     );
 
@@ -135,7 +135,7 @@ export class BotUpdate {
   @CheckWarnings()
   @CheckSubscription()
   async withdraw(@Ctx() ctx: SceneContext) {
-    const user = await this.usersService.findByTelegramId(
+    const user = await this.usersFindService.findByTelegramId(
       ctx.from.id.toString(),
     );
 
@@ -189,7 +189,7 @@ export class BotUpdate {
   @CheckWarnings()
   @CheckSubscription()
   async partners(@Ctx() ctx: SceneContext) {
-    const user = await this.usersService.findByTelegramIdWithReferral(
+    const user = await this.usersFindService.findByTelegramIdWithReferral(
       ctx.from.id.toString(),
     );
 
@@ -237,7 +237,7 @@ export class BotUpdate {
   @CheckWarnings()
   @CheckSubscription()
   async tasks(@Ctx() ctx: SceneContext) {
-    const user = await this.usersService.findByTelegramIdWithReferral(
+    const user = await this.usersFindService.findByTelegramIdWithReferral(
       ctx.from.id.toString(),
     );
 
@@ -331,7 +331,7 @@ export class BotUpdate {
   @CheckWarnings()
   @CheckSubscription()
   async information(@Ctx() ctx: SceneContext) {
-    const user = await this.usersService.findByTelegramIdWithReferral(
+    const user = await this.usersFindService.findByTelegramIdWithReferral(
       ctx.from.id.toString(),
     );
 
@@ -413,7 +413,7 @@ export class BotUpdate {
   @CheckWarnings()
   @CheckSubscription()
   async topRefUsers(@Ctx() ctx: SceneContext) {
-    const user = await this.usersService.findByTelegramIdWithReferral(
+    const user = await this.usersFindService.findByTelegramIdWithReferral(
       ctx.from.id.toString(),
     );
 

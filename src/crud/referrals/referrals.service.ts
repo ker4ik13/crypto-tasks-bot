@@ -1,4 +1,5 @@
 import { DEFAULT_REWARD_FOR_A_FRIEND, ENV_NAMES } from '@/lib/common';
+import { beautyCurrency } from '@/lib/helpers';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import type { Prisma, Referral } from '@prisma/client';
@@ -98,7 +99,7 @@ export class ReferralsService {
 
     const updatedUser = await this.usersService.updateById(codeOwner.owner.id, {
       currentBalance: {
-        increment: dto.reward,
+        increment: +beautyCurrency(dto.reward),
       },
     });
 

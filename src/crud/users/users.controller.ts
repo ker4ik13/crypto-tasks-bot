@@ -55,7 +55,7 @@ export class UsersController {
 
   @Get('telegram-id/:telegramId')
   findByTelegramId(@Param('telegramId') telegramId: string) {
-    return this.usersService.findByTelegramIdWithReferral(telegramId);
+    return this.usersFindService.findByTelegramIdWithReferral(telegramId);
   }
 
   @Patch(':id')
