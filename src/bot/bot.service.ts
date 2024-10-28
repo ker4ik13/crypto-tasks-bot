@@ -106,7 +106,24 @@ export class BotService {
             member.status != 'creator'
           ) {
             notSubsChannels.push(channel);
+
+            this.sponsorsService.updateBySlug(channel.channelSlug, {
+              subsUsers: {
+                disconnect: {
+                  telegramId: ctx.from.id.toString(),
+                },
+              },
+            });
+            continue;
           }
+
+          this.sponsorsService.updateBySlug(channel.channelSlug, {
+            subsUsers: {
+              connect: {
+                telegramId: ctx.from.id.toString(),
+              },
+            },
+          });
         } catch (error) {
           for (const admin of CHATS) {
             await this.sendMessageByChatId(
