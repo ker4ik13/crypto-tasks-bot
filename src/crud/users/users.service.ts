@@ -232,6 +232,11 @@ export class UsersService {
         referral: {
           include: {
             invitedUsers: true,
+            _count: {
+              select: {
+                invitedUsers: true,
+              },
+            },
           },
         },
       },

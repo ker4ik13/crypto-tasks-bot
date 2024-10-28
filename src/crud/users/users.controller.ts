@@ -39,6 +39,11 @@ export class UsersController {
     return this.usersService.findById(+id);
   }
 
+  @Get('telegram-id/:telegramId')
+  findByTelegramId(@Param('telegramId') telegramId: string) {
+    return this.usersService.findByTelegramIdWithReferral(telegramId);
+  }
+
   @Patch(':id')
   updateById(@Param('id') id: string, @Body() dto: Prisma.UserUpdateInput) {
     return this.usersService.updateById(+id, dto);
