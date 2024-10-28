@@ -36,6 +36,19 @@ export class SponsorsService {
     });
   }
 
+  async getStats(): Promise<SponsorChannel[]> {
+    const allChannels = await this.database.sponsorChannel.findMany({
+      orderBy: { expirationDate: 'desc' },
+      include: {
+        _count: {
+          select: { subsUsers: true },
+        },
+      },
+    });
+
+    return allChannels;
+  }
+
   async findStart(): Promise<SponsorChannel[] | null> {
     return await this.database.sponsorChannel.findMany({
       where: {
@@ -51,10 +64,8 @@ export class SponsorsService {
       },
       orderBy: { expirationDate: 'asc' },
       include: {
-        subsUsers: {
-          include: {
-            _count: true,
-          },
+        _count: {
+          select: { subsUsers: true },
         },
       },
     });
@@ -75,10 +86,8 @@ export class SponsorsService {
       },
       orderBy: { expirationDate: 'asc' },
       include: {
-        subsUsers: {
-          include: {
-            _count: true,
-          },
+        _count: {
+          select: { subsUsers: true },
         },
       },
     });

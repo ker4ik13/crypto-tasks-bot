@@ -12,25 +12,21 @@ import { SponsorsService } from './sponsors.service';
 
 @Controller('sponsors')
 export class SponsorsController {
-  constructor(
-    private readonly sponsorsService: SponsorsService,
-    // @Inject(forwardRef(() => BotService))
-    // private readonly botService: BotService,
-  ) {}
+  constructor(private readonly sponsorsService: SponsorsService) {}
 
   @Post()
   create(@Body() dto: Prisma.SponsorChannelCreateInput) {
     return this.sponsorsService.create(dto);
   }
 
-  // @Post('mailing')
-  // mailing(@Body() dto: ICustomMessage) {
-  //   return this.botService.sendMessageAllUsers(dto);
-  // }
-
   @Get()
   findAll() {
     return this.sponsorsService.findAll();
+  }
+
+  @Get('stats')
+  getStats() {
+    return this.sponsorsService.getStats();
   }
 
   @Get('tasks')
