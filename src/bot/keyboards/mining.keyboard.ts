@@ -11,19 +11,13 @@ export const miningKeyboard = (currency = DEFAULT_CURRENCY) => {
       ),
       Markup.button.callback(`${emojis.refresh} Обновить`, 'mining|refresh'),
     ],
-    [
-      Markup.button.callback(`${emojis.back} Назад`, 'cabinet'),
-      Markup.button.callback(`${emojis.building} Главное меню`, 'main-menu'),
-    ],
+    [Markup.button.callback(`${emojis.back} Назад`, 'main-menu')],
   ];
 };
 
 export const miningStartKeyboard = () => {
   return [
     [Markup.button.callback(`${emojis.pick} Запустить`, 'mining|start')],
-    [
-      Markup.button.callback(`${emojis.back} Назад`, 'cabinet'),
-      Markup.button.callback(`${emojis.building} Главное меню`, 'main-menu'),
-    ],
+    [Markup.button.callback(`${emojis.back} Назад`, 'main-menu')],
   ];
 };

@@ -1,5 +1,5 @@
 import { CheckSubscription, CheckWarnings } from '@/auth/decorators';
-import { SponsorsService, UsersService } from '@/crud';
+import { UsersService } from '@/crud';
 import { MiningService } from '@/crud/mining';
 import { UsersFindService } from '@/crud/users/users-find.service';
 import { ENV_NAMES } from '@/lib/common';
@@ -18,7 +18,6 @@ export class MiningUpdate {
     private readonly usersService: UsersService,
     private readonly usersFindService: UsersFindService,
     private readonly configService: ConfigService,
-    private readonly sponsorsService: SponsorsService,
     private readonly miningService: MiningService,
   ) {}
 
