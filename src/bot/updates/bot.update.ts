@@ -8,7 +8,7 @@ import { ConfigService } from '@nestjs/config';
 import { Action, Ctx, Hears, Message, Start, Update } from 'nestjs-telegraf';
 import { Context } from 'telegraf';
 import { SceneContext } from 'telegraf/scenes';
-import { BotService } from './bot.service';
+import { BotService } from '../bot.service';
 import {
   cabinetKeyboard,
   IContact,
@@ -18,8 +18,8 @@ import {
   shareKeyboard,
   topRefsKeyboard,
   withdrawKeyboard,
-} from './keyboards';
-import { BotAlerts, BotMessages } from './messages';
+} from '../keyboards';
+import { BotAlerts, BotMessages } from '../messages';
 
 @Update()
 export class BotUpdate {

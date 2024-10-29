@@ -10,7 +10,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import type { Prisma, User } from '@prisma/client';
+import type { Mining, Prisma, User } from '@prisma/client';
 import { DatabaseService } from '../database/database.service';
 import { MessagesService } from '../messages';
 import { ReferralsService } from '../referrals';
@@ -135,6 +135,7 @@ export class UsersService {
             },
           },
         },
+        mining: true,
       },
     });
   }
@@ -142,7 +143,7 @@ export class UsersService {
   async updateByTelegramId(
     telegramId: string,
     dto: Prisma.UserUpdateInput,
-  ): Promise<User> {
+  ): Promise<User & { mining: Mining }> {
     return await this.database.user.update({
       where: { telegramId },
       data: dto,
@@ -156,6 +157,7 @@ export class UsersService {
             },
           },
         },
+        mining: true,
       },
     });
   }
@@ -179,6 +181,7 @@ export class UsersService {
             },
           },
         },
+        mining: true,
       },
     });
 

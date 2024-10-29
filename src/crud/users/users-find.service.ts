@@ -1,6 +1,7 @@
+import { strongBeautyCurrency } from '@/lib/helpers';
 import { LabelValue, UserWithReferral } from '@/lib/types';
 import { Injectable } from '@nestjs/common';
-import type { SponsorChannel, User } from '@prisma/client';
+import type { Mining, User } from '@prisma/client';
 import { DatabaseService } from '../database/database.service';
 
 @Injectable()
@@ -77,6 +78,7 @@ export class UsersFindService {
           },
         },
         sponsorChannels: true,
+        mining: true,
       },
     });
 
@@ -114,15 +116,21 @@ export class UsersFindService {
       },
       {
         label: 'Активные пользователи',
-        value: activeUsers.toString(),
+        value: `${activeUsers.toString()} | ${strongBeautyCurrency((activeUsers / totalCountOfUsers) * 100, 2)}%`,
       },
       {
         label: 'Пользователи без рефералов',
-        value: usersWithoutReferral.toString(),
+        value: `${usersWithoutReferral.toString()} | ${strongBeautyCurrency(
+          (usersWithoutReferral / totalCountOfUsers) * 100,
+          2,
+        )}%`,
       },
       {
-        label: 'Заблокированные пользователи',
-        value: usersWhoBlockedTheBot.toString(),
+        label: 'Пользователи, заблокировавшие бота',
+        value: `${usersWhoBlockedTheBot.toString()} | ${strongBeautyCurrency(
+          (usersWhoBlockedTheBot / totalCountOfUsers) * 100,
+          2,
+        )}%`,
       },
     ];
   }
@@ -148,31 +156,16 @@ export class UsersFindService {
     });
   }
 
-  async addRewardToUserFromSubscription(
+  async findByTelegramId(
     telegramId: string,
-    channel: SponsorChannel,
-  ) {
-    const updatedUser = await this.database.user.update({
-      where: { telegramId },
-      data: {
-        currentBalance: {
-          increment: channel.reward,
-        },
-      },
-    });
-
-    if (!updatedUser) return null;
-
-    return updatedUser;
-  }
-
-  async findByTelegramId(telegramId: string): Promise<User | null> {
+  ): Promise<(User & { mining: Mining }) | null> {
     if (!telegramId) return null;
 
     const user = await this.database.user.findUnique({
       where: { telegramId: telegramId.toString() },
       include: {
         referral: true,
+        mining: true,
       },
     });
 
@@ -183,7 +176,9 @@ export class UsersFindService {
     return user;
   }
 
-  async findByIdWithReferral(id: number): Promise<UserWithReferral | null> {
+  async findByIdWithReferral(
+    id: number,
+  ): Promise<(UserWithReferral & { mining: Mining }) | null> {
     if (!id) return null;
 
     const user = await this.database.user.findUnique({
@@ -199,6 +194,7 @@ export class UsersFindService {
             },
           },
         },
+        mining: true,
       },
     });
 
@@ -227,6 +223,7 @@ export class UsersFindService {
             },
           },
         },
+        mining: true,
       },
     });
 

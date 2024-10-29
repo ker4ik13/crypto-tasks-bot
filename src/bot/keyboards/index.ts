@@ -2,6 +2,7 @@ export * from './cabinet.keyboard';
 export * from './channels.keyboard';
 export * from './information.keyboard';
 export * from './main.keyboard';
+export * from './mining.keyboard';
 export * from './share.keyboard';
 export * from './tasks.keyboard';
 export * from './top-refs.keyboard';

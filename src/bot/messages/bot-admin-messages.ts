@@ -1,31 +1,14 @@
 import { DEFAULT_CURRENCY } from '@/lib/common';
 import { beautyCurrency, getBeautyMessage } from '@/lib/helpers';
-import type { IAdminMessage } from '@/lib/types';
+import type { IAdminMessage, LabelValue } from '@/lib/types';
 import { emojis } from '@/lib/utils';
 import type { User } from '@prisma/client';
 
 export const BotAdminMessages = {
-  mailingStatistics: (
-    activeUsers: number,
-    usersWhoBlockedTheBot: number,
-    successSend: number,
-    usersWithoutReferral: number,
-  ) => {
+  mailingStatistics: (stats: LabelValue[]) => {
     return {
       title: `${emojis.message} Результаты рассылки по всем пользователям`,
-      text: `${getBeautyMessage({
-        label: `Активные пользователи:`,
-        value: activeUsers.toString(),
-      })}${getBeautyMessage({
-        label: `Пользователи, которые заблокировали бота:`,
-        value: usersWhoBlockedTheBot.toString(),
-      })}${getBeautyMessage({
-        label: `Успешно получили сообщение:`,
-        value: successSend.toString(),
-      })}${getBeautyMessage({
-        label: `Пользователи без рефералов:`,
-        value: usersWithoutReferral.toString(),
-      })}`,
+      text: stats.map((stat) => getBeautyMessage(stat)).join(''),
     };
   },
   mailingError: (error: string): IAdminMessage => {

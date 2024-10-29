@@ -1,5 +1,6 @@
 import { BotAdminMessages } from '@/bot/messages';
 import { DEFAULT_CURRENCY, DEFAULT_REWARD_FOR_A_FRIEND } from '@/lib/common';
+import { strongBeautyCurrency } from '@/lib/helpers';
 import { IAdminMessage, ICustomMessage } from '@/lib/types';
 import { emojis } from '@/lib/utils';
 import {
@@ -162,19 +163,20 @@ export class MessagesService {
     }
 
     // Статистика по пользователям
-    const activeUsers = await this.usersFindService.findAllActiveUsers();
-    const usersWhoBlockedTheBot =
-      await this.usersFindService.findAllUsersBlockedTheBot();
-    const usersWithoutReferral =
-      await this.usersFindService.findWithoutReferrals();
+    const totalUsersCount = await this.usersFindService.getTotalCountOfUsers();
+    const usersStat = await this.usersFindService.getStats();
 
     await this.sendAdminMessage(
-      BotAdminMessages.mailingStatistics(
-        activeUsers,
-        usersWhoBlockedTheBot,
-        successSend,
-        usersWithoutReferral,
-      ),
+      BotAdminMessages.mailingStatistics([
+        {
+          label: 'Успешно получили сообщение',
+          value: `${successSend.toString()} | ${strongBeautyCurrency(
+            (successSend / totalUsersCount) * 100,
+            2,
+          )}`,
+        },
+        ...usersStat,
+      ]),
     );
 
     return;

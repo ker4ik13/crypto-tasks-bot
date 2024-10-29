@@ -74,8 +74,15 @@ export class ReferralsService {
       },
     });
 
+    const rewardForAFriend = this.configService.get(
+      ENV_NAMES.REWARD_FOR_A_FRIEND,
+    );
+
     // Добавляем награду владельцу
-    await this.addRewardToUser(dto);
+    await this.addRewardToUser({
+      ...dto,
+      reward: +rewardForAFriend,
+    });
     return updatedReferral;
   }
 

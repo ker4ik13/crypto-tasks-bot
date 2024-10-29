@@ -8,27 +8,36 @@ datasource db {
 }
 
 model User {
-  id              Int       @id @default(autoincrement())
-  telegramId      String    @unique
-  firstName       String
-  lastName        String?
-  username        String?
-  languageCode    String?
-  isAdmin         Boolean?  @default(false)
-  currentBalance  Float     @default(0)
-  outputBalance   Float     @default(0)
-  payments        Payment[]
-  createdDate     DateTime  @default(now()) @db.Date
-  isBlockedTheBot Boolean?  @default(false)
-  warningsCount   Int       @default(0)
+  id                    Int              @id @default(autoincrement())
+  telegramId            String           @unique
+  firstName             String
+  lastName              String?
+  username              String?
+  languageCode          String?
+  isAdmin               Boolean?         @default(false)
+  currentBalance        Float            @default(0)
+  outputBalance         Float            @default(0)
+  payments              Payment[]
+  createdDate           DateTime         @default(now()) @db.Date
+  isBlockedTheBot       Boolean?         @default(false)
+  warningsCount         Int              @default(0)
+  dateOfLastDailyReward DateTime?        @db.Date
+  invitedBy             Referral?        @relation("InvitedUsers", fields: [invitedById], references: [id])
+  invitedById           Int?
+  referral              Referral?        @relation("ReferralOwner")
+  mining                Mining?          @relation("UserMining")
+  sponsorChannels       SponsorChannel[] @relation("SubsUsers")
+}
 
-  // Пользователь, который пригласил данного пользователя (через реферальный код)
-  invitedBy   Referral? @relation("InvitedUsers", fields: [invitedById], references: [id])
-  invitedById Int?
-
-  // Собственный реферальный код, который принадлежит данному пользователю
-  referral        Referral?        @relation("ReferralOwner")
-  sponsorChannels SponsorChannel[] @relation("SubsUsers")
+model Mining {
+  id                Int     @id @default(autoincrement())
+  isEnabled         Boolean @default(false)
+  countPerSecond    Float   @default(0.000001)
+  currentBalance    Float   @default(0)
+  collectedBalance  Float   @default(0)
+  dateOfLastReceipt String
+  owner             User    @relation("UserMining", fields: [ownerId], references: [id])
+  ownerId           Int     @unique
 }
 
 model Payment {
