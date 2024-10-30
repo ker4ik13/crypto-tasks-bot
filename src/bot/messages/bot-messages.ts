@@ -15,8 +15,12 @@ export const BotMessages = {
     `Приветствую, это проект где вы можете зарабатывать ${currency}. Есть два способа заработка: получать ${currency} с помощью рефералов или инвестировать свои ${currency} 🪙`,
   pleaseAuth: `${emojis.key} Для авторизации в нашем боте нужно вступить во все наши каналы:`,
   authDone: `${emojis.checkmark} Вы успешно подписались`,
-  cabinet: (user: User, currency = DEFAULT_CURRENCY) => {
-    return `📱 <b>Ваш Кабинет:</b>\n\n<b>👤 Имя:</b> ${user.firstName}\n<b>${emojis.key} Ваш ID:</b> <code>${user.telegramId}</code>\n\n<b>${emojis.card} Баланс:</b>\n● <b>Основной:</b> <code>${beautyCurrency(user.currentBalance)}</code> ${currency}\n● <b>Выведено:</b> <code>${beautyCurrency(user.outputBalance)}</code> ${currency}`;
+  cabinet: (
+    user: User,
+    maxWarningCount: number,
+    currency = DEFAULT_CURRENCY,
+  ) => {
+    return `📱 <b>Ваш Кабинет:</b>\n\n<b>👤 Имя:</b> ${user.firstName}\n<b>${emojis.key} Ваш ID:</b> <code>${user.telegramId}</code>\n${user.warningsCount > 0 ? `${emojis.warning} <b>Предупреждения:</b> ${user.warningsCount}/${maxWarningCount}\n\n` : '\n'}<b>${emojis.card} Баланс:</b>\n● <b>Основной:</b> <code>${beautyCurrency(user.currentBalance)}</code> ${currency}\n● <b>Выведено:</b> <code>${beautyCurrency(user.outputBalance)}</code> ${currency}`;
   },
   partners: (
     user: UserWithReferral,

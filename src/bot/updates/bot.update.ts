@@ -123,7 +123,14 @@ export class BotUpdate {
       return;
     }
 
-    await ctx.reply(BotMessages.cabinet(user), {
+    const maxWarningCount = await this.configService.get(
+      ENV_NAMES.MAX_WARNING_COUNT,
+    );
+    const currency = await this.configService.get(
+      ENV_NAMES.TELEGRAM_BOT_CURRENCY,
+    );
+
+    await ctx.reply(BotMessages.cabinet(user, maxWarningCount, currency), {
       parse_mode: 'HTML',
       reply_markup: {
         inline_keyboard: cabinetKeyboard(),

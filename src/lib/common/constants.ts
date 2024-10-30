@@ -38,8 +38,7 @@ export const ENV_NAMES = {
 };
 
 // Default values
-export const DEFAULT_CURRENCY =
-  process.env[ENV_NAMES.TELEGRAM_BOT_CURRENCY] || 'USDT';
+export const DEFAULT_CURRENCY = process.env[ENV_NAMES.TELEGRAM_BOT_CURRENCY];
 export const DEFAULT_REWARD_FOR_A_FRIEND =
   +process.env[ENV_NAMES.REWARD_FOR_A_FRIEND];
 export const DEFAULT_MIN_WITHDRAWAL_AMOUNT =
