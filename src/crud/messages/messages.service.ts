@@ -1,5 +1,4 @@
-import { dailyRewardReminderKeyboard } from '@/bot/keyboards';
-import { BotAdminMessages, BotMessages } from '@/bot/messages';
+import { BotAdminMessages } from '@/bot/messages';
 import { DEFAULT_CURRENCY, DEFAULT_REWARD_FOR_A_FRIEND } from '@/lib/common';
 import { strongBeautyCurrency } from '@/lib/helpers';
 import { IAdminMessage, ICustomMessage } from '@/lib/types';
@@ -10,7 +9,6 @@ import {
   Inject,
   Injectable,
 } from '@nestjs/common';
-import { Cron, CronExpression } from '@nestjs/schedule';
 import { InjectBot } from 'nestjs-telegraf';
 import { Context, Markup, Telegraf } from 'telegraf';
 import {
@@ -28,8 +26,6 @@ type MarkupType =
   | ReplyKeyboardMarkup
   | ReplyKeyboardRemove
   | ForceReply;
-
-const ONE_DAY_SECONDS = 24 * 60 * 60;
 
 @Injectable()
 export class MessagesService {
@@ -232,60 +228,5 @@ export class MessagesService {
         message: `Не удалось отправить сообщение админам.\n\n${error}`,
       });
     }
-  }
-
-  @Cron(CronExpression.EVERY_HOUR)
-  async dailyRewardReminder() {
-    const allUsers = await this.usersFindService.findAllNotBlockedUsers();
-    if (!allUsers || allUsers.length === 0) return;
-
-    for (const user of allUsers) {
-      if (!user.dateOfLastDailyReward) {
-        try {
-          await this.sendMessageByChatId(
-            +user.telegramId,
-            BotMessages.dailyRewardReminder,
-            {
-              inline_keyboard: dailyRewardReminderKeyboard(),
-            },
-          );
-        } catch (error) {
-          await this.usersService.updateById(user.id, {
-            isBlockedTheBot: true,
-          });
-          console.log(BotAdminMessages.mailingDontSendBecauseBlocked(user));
-        }
-
-        continue;
-      }
-
-      if (user.dateOfLastDailyReward) {
-        const dateOfLastDailyRewardInSeconds =
-          new Date(user.dateOfLastDailyReward).getTime() / 1000;
-        const nowDateInSeconds = new Date().getTime() / 1000;
-
-        const diffTimeInSeconds =
-          nowDateInSeconds - dateOfLastDailyRewardInSeconds;
-
-        if (diffTimeInSeconds < ONE_DAY_SECONDS) continue;
-
-        try {
-          await this.sendMessageByChatId(
-            +user.telegramId,
-            BotMessages.dailyRewardReminder,
-            {
-              inline_keyboard: dailyRewardReminderKeyboard(),
-            },
-          );
-        } catch (error) {
-          await this.usersService.updateById(user.id, {
-            isBlockedTheBot: true,
-          });
-          console.log(BotAdminMessages.mailingDontSendBecauseBlocked(user));
-        }
-      }
-    }
-
-    return;
   }
 }
