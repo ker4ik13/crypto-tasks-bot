@@ -44,6 +44,16 @@ export class UsersFindService {
     });
   }
 
+  async findAllNotBlockedUsers() {
+    return await this.database.user.findMany({
+      where: {
+        isBlockedTheBot: {
+          equals: false,
+        },
+      },
+    });
+  }
+
   async findAllUsersBlockedTheBot() {
     return await this.database.user.count({
       where: {

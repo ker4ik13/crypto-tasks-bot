@@ -1,6 +1,7 @@
 import { warningKeyboard } from '@/bot/keyboards';
 import { BotAdminMessages, BotMessages } from '@/bot/messages';
 import { ENV_NAMES } from '@/lib/common';
+import { beautyCurrency, secondsToTime } from '@/lib/helpers';
 import { ICustomError } from '@/lib/types';
 import {
   ConflictException,
@@ -14,6 +15,9 @@ import type { Mining, Prisma, User } from '@prisma/client';
 import { DatabaseService } from '../database/database.service';
 import { MessagesService } from '../messages';
 import { ReferralsService } from '../referrals';
+import { UsersFindService } from './users-find.service';
+
+const ONE_DAY_SECONDS = 24 * 60 * 60;
 
 @Injectable()
 export class UsersService {
@@ -24,6 +28,7 @@ export class UsersService {
     @Inject(forwardRef(() => MessagesService))
     private readonly messagesService: MessagesService,
     private readonly configService: ConfigService,
+    private readonly usersFindService: UsersFindService,
   ) {}
 
   async create(dto: Prisma.UserCreateInput): Promise<User> {
@@ -256,5 +261,57 @@ export class UsersService {
         },
       },
     });
+  }
+
+  async getDailyReward(telegramId: string): Promise<ICustomError> {
+    const user = await this.usersFindService.findByTelegramId(telegramId);
+    if (!user) return null;
+
+    const dailyRewardAmount = +this.configService.get(
+      ENV_NAMES.DAILY_REWARD_AMOUNT,
+    );
+
+    const currency = await this.configService.get(
+      ENV_NAMES.TELEGRAM_BOT_CURRENCY,
+    );
+
+    if (!user.dateOfLastDailyReward) {
+      await this.updateByTelegramId(telegramId, {
+        dateOfLastDailyReward: new Date().toISOString(),
+        currentBalance: +beautyCurrency(
+          user.currentBalance + dailyRewardAmount,
+        ),
+      });
+
+      return {
+        isError: false,
+        message: BotMessages.dailyRewardSuccess(dailyRewardAmount, currency),
+      };
+    }
+
+    const dateOfLastDailyRewardInSeconds =
+      new Date(user.dateOfLastDailyReward).getTime() / 1000;
+    const nowDateInSeconds = new Date().getTime() / 1000;
+
+    const diffTimeInSeconds = nowDateInSeconds - dateOfLastDailyRewardInSeconds;
+
+    if (diffTimeInSeconds < ONE_DAY_SECONDS) {
+      return {
+        isError: true,
+        message: BotMessages.dailyRewardError(
+          secondsToTime(ONE_DAY_SECONDS - diffTimeInSeconds),
+        ),
+      };
+    }
+
+    await this.updateByTelegramId(telegramId, {
+      dateOfLastDailyReward: new Date().toISOString(),
+      currentBalance: +beautyCurrency(user.currentBalance + dailyRewardAmount),
+    });
+
+    return {
+      isError: false,
+      message: BotMessages.dailyRewardSuccess(dailyRewardAmount, currency),
+    };
   }
 }

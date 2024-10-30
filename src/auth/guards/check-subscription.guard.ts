@@ -1,5 +1,5 @@
 import { BotService } from '@/bot/bot.service';
-import { UsersFindService, UsersService } from '@/crud';
+import { UsersService } from '@/crud';
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Context } from 'telegraf';
 import { SceneContext, WizardContext } from 'telegraf/scenes';
@@ -8,7 +8,6 @@ import { SceneContext, WizardContext } from 'telegraf/scenes';
 export class CheckSubscriptionGuard implements CanActivate {
   constructor(
     private readonly botService: BotService,
-    private readonly usersFindService: UsersFindService,
     private readonly usersService: UsersService,
   ) {}
 

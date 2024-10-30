@@ -11,6 +11,7 @@ import { SceneContext } from 'telegraf/scenes';
 import { BotService } from '../bot.service';
 import {
   cabinetKeyboard,
+  dailyRewardKeyboard,
   IContact,
   informationKeyboard,
   newTaskKeyboard,
@@ -450,6 +451,41 @@ export class BotUpdate {
         ),
       },
     });
+    return;
+  }
+
+  @Action('daily-reward')
+  @CheckWarnings()
+  @CheckSubscription()
+  async getDailyReward(@Ctx() ctx: SceneContext) {
+    const user = await this.usersFindService.findByTelegramId(
+      ctx.from.id.toString(),
+    );
+
+    if (!user) {
+      await this.usersService.create({
+        telegramId: ctx.from.id.toString(),
+        firstName: ctx.from.first_name,
+        lastName: ctx.from.last_name,
+        username: ctx.from.username,
+        languageCode: ctx.from.language_code,
+      });
+
+      await this.botService.checkChannelsSubs(ctx, 'first');
+      return;
+    }
+
+    const dailyReward = await this.usersService.getDailyReward(
+      ctx.from.id.toString(),
+    );
+
+    await ctx.reply(dailyReward.message, {
+      parse_mode: 'HTML',
+      reply_markup: {
+        inline_keyboard: dailyRewardKeyboard(),
+      },
+    });
+
     return;
   }
 }

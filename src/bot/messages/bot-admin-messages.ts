@@ -17,7 +17,7 @@ export const BotAdminMessages = {
       text: error,
     };
   },
-  mailingDontSendBeacuseBlocked: (user: User) =>
+  mailingDontSendBecauseBlocked: (user: User) =>
     `Пользователь ${user.telegramId} ${user.username ? `(@${user.username})` : ''} не получил сообщения из за блокировки бота`,
   noMoney: (
     user: User,

@@ -38,6 +38,9 @@ export class ReferralsService {
     code: string;
     userId: number;
   }): Promise<Referral | null> {
+    if (!dto.code || !dto.userId) return null;
+    if (dto.code === dto.userId.toString()) return null;
+
     // Ищем владельца рефералки
     const ownerReferral = await this.database.referral.findUnique({
       where: {

@@ -39,4 +39,5 @@ export const emojis = {
   handshake: '🤝',
   pick: '⛏️',
   lightning: '⚡️',
+  gift: '🎁',
 };

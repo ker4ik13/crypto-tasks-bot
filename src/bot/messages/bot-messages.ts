@@ -6,9 +6,9 @@ import {
   DEFAULT_TELEGRAM_BOT_USERNAME,
 } from '@/lib/common';
 import { beautyCurrency, getNormalChannelLink } from '@/lib/helpers';
-import { UserWithReferral } from '@/lib/types';
+import type { ITime, UserWithReferral } from '@/lib/types';
 import { emojis } from '@/lib/utils';
-import { SponsorChannel, User } from '@prisma/client';
+import type { SponsorChannel, User } from '@prisma/client';
 
 export const BotMessages = {
   welcome: (currency = DEFAULT_CURRENCY) =>
@@ -69,4 +69,12 @@ export const BotMessages = {
     admin = DEFAULT_ADMIN_USERNAME,
   ) =>
     `<b>${emojis.warning} Вы достигли лимита предупреждений: ${user.warningsCount}/${maxWarningCount}</b>\n\n${emojis.blick} Доступ к боту ограничен.\n\n<b>Подробнее:</b> @${admin}`,
+  dailyRewardSuccess: (
+    dailyRewardAmount: number,
+    currency = DEFAULT_CURRENCY,
+  ) =>
+    `🎉 Вы получили ${dailyRewardAmount} ${currency} в качестве ежедневного бонуса!`,
+  dailyRewardError: (time: ITime) =>
+    `⌛ Вы уже получили бонус сегодня. Следующий бонус будет доступен через ${time.hours ? time.hours : 0} часов и ${time.minutes ? time.minutes : 0} минут.`,
+  dailyRewardReminder: `${emojis.gift}<b> Не забудьте забрать ежедневный бонус!</b>`,
 };

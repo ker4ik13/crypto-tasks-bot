@@ -17,6 +17,7 @@ export const ENV_NAMES = {
   MINING_SIZE_PER_SECOND: 'MINING_SIZE_PER_SECOND',
   MINING_SIZE_PER_SECOND_NUMBERS_OF_DIGITS:
     'MINING_SIZE_PER_SECOND_NUMBERS_OF_DIGITS',
+  DAILY_REWARD_AMOUNT: 'DAILY_REWARD_AMOUNT',
   NODE_ENV: 'NODE_ENV',
   ENV_PATH: (mode?: 'development' | 'production' | 'test' | string) => {
     if (!mode) return '.env';

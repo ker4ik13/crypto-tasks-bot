@@ -21,7 +21,7 @@ model User {
   createdDate           DateTime         @default(now()) @db.Date
   isBlockedTheBot       Boolean?         @default(false)
   warningsCount         Int              @default(0)
-  dateOfLastDailyReward DateTime?        @db.Date
+  dateOfLastDailyReward String?
   invitedBy             Referral?        @relation("InvitedUsers", fields: [invitedById], references: [id])
   invitedById           Int?
   referral              Referral?        @relation("ReferralOwner")
