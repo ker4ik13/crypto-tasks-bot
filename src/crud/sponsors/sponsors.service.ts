@@ -21,13 +21,14 @@ export class SponsorsService {
     return await this.database.sponsorChannel.create({
       data: {
         ...dto,
+        createdDate: new Date().toISOString(),
         expirationDate: new Date(dto.expirationDate).toISOString(),
       },
     });
   }
   async findAll(): Promise<SponsorChannel[] | null> {
     return await this.database.sponsorChannel.findMany({
-      orderBy: { expirationDate: 'asc' },
+      orderBy: [{ isActive: 'desc' }, { createdDate: 'desc' }],
       include: {
         _count: {
           select: { subsUsers: true },
@@ -38,7 +39,7 @@ export class SponsorsService {
 
   async getStats(): Promise<SponsorChannel[]> {
     const allChannels = await this.database.sponsorChannel.findMany({
-      orderBy: { expirationDate: 'desc' },
+      orderBy: [{ isActive: 'desc' }, { createdDate: 'desc' }],
       include: {
         _count: {
           select: { subsUsers: true },
@@ -53,10 +54,10 @@ export class SponsorsService {
     return await this.database.sponsorChannel.findMany({
       where: {
         AND: {
-          OR: [{ type: 'start' }, { type: 'all' }],
           isActive: {
             equals: true,
           },
+          OR: [{ type: 'start' }, { type: 'all' }],
         },
         expirationDate: {
           gte: new Date().toISOString(),
@@ -75,10 +76,10 @@ export class SponsorsService {
     return await this.database.sponsorChannel.findMany({
       where: {
         AND: {
-          OR: [{ type: 'task' }, { type: 'all' }],
           isActive: {
             equals: true,
           },
+          OR: [{ type: 'task' }, { type: 'all' }],
         },
         expirationDate: {
           gte: new Date().toISOString(),
