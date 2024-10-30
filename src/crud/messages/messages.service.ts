@@ -173,7 +173,7 @@ export class MessagesService {
           value: `${successSend.toString()} | ${strongBeautyCurrency(
             (successSend / totalUsersCount) * 100,
             2,
-          )}`,
+          )}%`,
         },
         ...usersStat,
       ]),
