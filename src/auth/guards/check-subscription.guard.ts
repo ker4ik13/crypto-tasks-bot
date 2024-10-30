@@ -1,5 +1,5 @@
 import { BotService } from '@/bot/bot.service';
-import { UsersFindService } from '@/crud';
+import { UsersFindService, UsersService } from '@/crud';
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Context } from 'telegraf';
 import { SceneContext, WizardContext } from 'telegraf/scenes';
@@ -9,6 +9,7 @@ export class CheckSubscriptionGuard implements CanActivate {
   constructor(
     private readonly botService: BotService,
     private readonly usersFindService: UsersFindService,
+    private readonly usersService: UsersService,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -19,8 +20,15 @@ export class CheckSubscriptionGuard implements CanActivate {
       return false;
     }
 
-    const user = await this.usersFindService.findByTelegramId(
+    const user = await this.usersService.updateByTelegramId(
       ctx.from.id.toString(),
+      {
+        firstName: ctx.from.first_name,
+        lastName: ctx.from.last_name,
+        username: ctx.from.username,
+        languageCode: ctx.from.language_code,
+        isBlockedTheBot: false,
+      },
     );
 
     if (user && user.isAdmin) {
