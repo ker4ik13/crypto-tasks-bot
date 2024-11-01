@@ -47,4 +47,7 @@ export const emojis = {
   arrowRight: '➡️',
   doubleArrowRight: '⏩',
   toggle: '🔃',
+  start: '🏁',
+  task: '📝',
+  all: '🌟',
 };

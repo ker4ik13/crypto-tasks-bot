@@ -14,7 +14,7 @@ export const BotAdminMessages = {
     return `${user.firstName}, добро пожаловать в админ панель бота. Вы можете управлять ботом, рассылать сообщения и отслеживать статистику`;
   },
   users: `${emojis.user} <b>Список всех пользователей:</b>\n\n${emojis.info} Чтобы выполнить поиск по странице, отправьте боту:\n<code>admin|users|10</code>\nгде 10 – это страница поиска`,
-  channels: `${emojis.peoples} <b>Список всех каналов спонсоров:</b>\n\n${emojis.info} Чтобы выполнить поиск по странице, отправьте боту:\n<code>admin-channels|10</code>\nгде 10 – это страница поиска`,
+  channels: `${emojis.peoples} <b>Список всех каналов спонсоров:</b>\n\n${emojis.info} Чтобы выполнить поиск по странице, отправьте боту:\n<code>admin-channels|10</code>\nгде 10 – это страница поиска\n\n${emojis.info} <b>Обозначения:</b> ${emojis.start} – Старт, ${emojis.task} – Задание, ${emojis.all} – Везде`,
   user: (user: UserAll, currency: string) => {
     const result = [
       `${emojis.user} ${user.firstName} ${user.lastName ? user.lastName : ''} ${user.username ? `(@${user.username})` : ''}`,
@@ -53,7 +53,7 @@ export const BotAdminMessages = {
       `${emojis.search} <b>Тип канала:</b> ${getLabelFromChannelType(channel.type)}`,
       `${emojis.bagOfMoney} <b>Вознаграждение:</b> ${beautyCurrency(channel.reward)} ${currency}`,
       `${channel.isActive ? emojis.available : emojis.unavailable} <b>Статус:</b> ${channel.isActive ? 'Активен' : 'Не активен'}`,
-      `${emojis.peoples} Подписчиков: ${channel.subsUsers.length}\n`,
+      `${emojis.peoples} Подписчиков пришло: ${channel.subsUsers.length}\n`,
       `${emojis.calendar} Дата создания: ${new Date(channel.createdDate).toLocaleString('ru')}`,
       `${emojis.calendar} Срок истекает: ${new Date(channel.expirationDate).toLocaleString('ru')}`,
     ];

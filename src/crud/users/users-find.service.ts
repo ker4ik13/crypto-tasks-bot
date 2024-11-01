@@ -34,6 +34,12 @@ export class UsersFindService {
       skip: limit * (page - 1),
       orderBy: [
         {
+          currentBalance: 'desc',
+        },
+        {
+          referral: { invitedUsers: { _count: 'desc' } },
+        },
+        {
           isBlockedTheBot: 'asc',
         },
         { createdDate: 'desc' },

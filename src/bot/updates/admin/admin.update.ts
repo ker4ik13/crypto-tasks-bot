@@ -21,6 +21,8 @@ import { BotAdminMessages } from '../../messages';
 
 @Update()
 export class AdminUpdate {
+  page = 1;
+
   constructor(
     private readonly botService: BotService,
     private readonly usersFindService: UsersFindService,
@@ -96,6 +98,7 @@ export class AdminUpdate {
     } else {
       page = +getValueFromAction(ctx, 1) || 1;
     }
+    this.page = page;
 
     const allChannels = await this.sponsorsService.findAllForAdmin(page);
 
@@ -139,7 +142,7 @@ export class AdminUpdate {
           is_disabled: true,
         },
         reply_markup: {
-          inline_keyboard: adminChannelKeyboard(channel),
+          inline_keyboard: adminChannelKeyboard(channel, this.page),
         },
       })
       .catch(async () => {
@@ -149,7 +152,7 @@ export class AdminUpdate {
             is_disabled: true,
           },
           reply_markup: {
-            inline_keyboard: adminChannelKeyboard(channel),
+            inline_keyboard: adminChannelKeyboard(channel, this.page),
           },
         });
       });
@@ -168,8 +171,9 @@ export class AdminUpdate {
     } else {
       page = +getValueFromAction(ctx, 2) || 1;
     }
+    this.page = page;
 
-    const users = await this.usersFindService.findAllForAdmin(+page, 1);
+    const users = await this.usersFindService.findAllForAdmin(+page);
 
     if (!users) {
       return;
@@ -212,14 +216,14 @@ export class AdminUpdate {
       .editMessageText(BotAdminMessages.user(user, currency), {
         parse_mode: 'HTML',
         reply_markup: {
-          inline_keyboard: adminUserKeyboard(user),
+          inline_keyboard: adminUserKeyboard(user, this.page),
         },
       })
       .catch(async () => {
         await ctx.reply(BotAdminMessages.user(user, currency), {
           parse_mode: 'HTML',
           reply_markup: {
-            inline_keyboard: adminUserKeyboard(user),
+            inline_keyboard: adminUserKeyboard(user, this.page),
           },
         });
       });

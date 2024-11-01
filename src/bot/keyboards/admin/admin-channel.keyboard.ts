@@ -3,7 +3,7 @@ import { emojis } from '@/lib/utils';
 import { SponsorChannel } from '@prisma/client';
 import { Markup } from 'telegraf';
 
-export const adminChannelKeyboard = (channel: SponsorChannel) => {
+export const adminChannelKeyboard = (channel: SponsorChannel, fromPage = 1) => {
   const result = [
     [
       Markup.button.callback(
@@ -31,7 +31,7 @@ export const adminChannelKeyboard = (channel: SponsorChannel) => {
         `toggle-expiration-channel|${channel.id}`,
       ),
     ],
-    [Markup.button.callback(`‹ Назад`, 'admin-channels|1')],
+    [Markup.button.callback(`‹ Назад`, `admin-channels|${fromPage}`)],
   ];
 
   return [...result];

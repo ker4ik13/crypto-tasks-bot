@@ -2,7 +2,7 @@ import { emojis } from '@/lib/utils';
 import { User } from '@prisma/client';
 import { Markup } from 'telegraf';
 
-export const adminUserKeyboard = (user: User) => {
+export const adminUserKeyboard = (user: User, fromPage = 1) => {
   const result = [
     [
       Markup.button.callback(
@@ -22,7 +22,7 @@ export const adminUserKeyboard = (user: User) => {
         `withdraw|user|${user.telegramId}`,
       ),
     ],
-    [Markup.button.callback(`‹ Назад`, 'admin|users|1')],
+    [Markup.button.callback(`‹ Назад`, `admin|users|${fromPage}`)],
   ];
 
   return [...result];
