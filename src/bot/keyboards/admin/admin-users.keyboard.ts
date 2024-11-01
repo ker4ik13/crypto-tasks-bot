@@ -1,4 +1,4 @@
-import { beautyCurrency } from '@/lib/helpers';
+import { strongBeautyCurrency } from '@/lib/helpers';
 import type { HistoryPaginationType, UserWithReferral } from '@/lib/types';
 import { emojis } from '@/lib/utils';
 import { Markup } from 'telegraf';
@@ -33,5 +33,5 @@ const getUserPreviewString = (
   user: UserWithReferral,
   currency: string,
 ): string => {
-  return `${user.isBlockedTheBot ? emojis.unavailable : emojis.available} ${user.username ? user.username : user.firstName.slice(0, 10)} • ${emojis.bagOfMoney} ${beautyCurrency(user.currentBalance)} ${currency} • ${emojis.peoples} ${user.referral && user.referral.invitedUsers && user.referral.invitedUsers.length > 0 ? user.referral.invitedUsers.length : 0}`;
+  return `${user.isBlockedTheBot ? emojis.unavailable : emojis.available} ${user.username ? user.username.slice(0, 10) : user.firstName.slice(0, 10)} • ${emojis.bagOfMoney} ${strongBeautyCurrency(user.currentBalance)} ${currency} • ${emojis.peoples} ${user.referral && user.referral.invitedUsers && user.referral.invitedUsers.length > 0 ? user.referral.invitedUsers.length : 0}${user.warningsCount > 0 ? ` • ${emojis.warning} ${user.warningsCount}` : ''}`;
 };
