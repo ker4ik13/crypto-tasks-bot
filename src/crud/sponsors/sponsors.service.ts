@@ -17,12 +17,20 @@ export class SponsorsService {
     private readonly walletService: WalletService,
   ) {}
 
-  async create(dto: Prisma.SponsorChannelCreateInput): Promise<SponsorChannel> {
+  async create(
+    dto: Prisma.SponsorChannelCreateInput,
+  ): Promise<SponsorChannel & { subsUsers: User[] }> {
     return await this.database.sponsorChannel.create({
       data: {
         ...dto,
         createdDate: new Date().toISOString(),
         expirationDate: new Date(dto.expirationDate).toISOString(),
+      },
+      include: {
+        subsUsers: true,
+        _count: {
+          select: { subsUsers: true },
+        },
       },
     });
   }
@@ -242,9 +250,16 @@ export class SponsorsService {
         isError: false,
       };
     } catch (error) {
-      throw new Error(
-        `Ошибка в sponsors.service.ts:checkUserSubscription\n\n${error}\n\nКанал: ${channelSlug}, пользователь: ${ctx.from.id}`,
+      console.log(
+        `Ошибка в sponsors.service.ts:checkUserSubscription\n\n${error}\n\nКанал: ${channelSlug}, пользователь: ${ctx.from.id}. Канал временно отключен.`,
       );
+      await this.updateBySlug(channelSlug, {
+        isActive: false,
+      });
+      return {
+        isError: true,
+        message: `Ошибка в sponsors.service.ts:checkUserSubscription\n\n${error}\n\nКанал: ${channelSlug}, пользователь: ${ctx.from.id}. Канал временно отключен.`,
+      };
     }
   }
 

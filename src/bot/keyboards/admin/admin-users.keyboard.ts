@@ -33,5 +33,6 @@ const getUserPreviewString = (
   user: UserWithReferral,
   currency: string,
 ): string => {
-  return `${user.isBlockedTheBot ? emojis.unavailable : emojis.available} ${user.username ? user.username.slice(0, 10) : user.firstName.slice(0, 10)} • ${emojis.bagOfMoney} ${strongBeautyCurrency(user.currentBalance)} ${currency} • ${emojis.peoples} ${user.referral && user.referral.invitedUsers && user.referral.invitedUsers.length > 0 ? user.referral.invitedUsers.length : 0}${user.warningsCount > 0 ? ` • ${emojis.warning} ${user.warningsCount}` : ''}`;
+  const result = `${user.isBlockedTheBot ? emojis.unavailable : emojis.available} ${user.username ? user.username.slice(0, 10).replace(/[^\x20-\x7E]+/g, '') : user.firstName.slice(0, 10).replace(/[^\x20-\x7E]+/g, '')} • ${emojis.bagOfMoney} ${strongBeautyCurrency(user.currentBalance)} ${currency} • ${emojis.peoples} ${user.referral && user.referral.invitedUsers && user.referral.invitedUsers.length > 0 ? user.referral.invitedUsers.length : 0}${user.warningsCount > 0 ? ` • ${emojis.warning} ${user.warningsCount}` : ''}`;
+  return result;
 };

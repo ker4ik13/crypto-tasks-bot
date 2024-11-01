@@ -6,8 +6,9 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TelegrafModule } from 'nestjs-telegraf';
 import { session } from 'telegraf';
 import { BotService } from './bot.service';
+import { SceneModule } from './scenes';
 import { AdminUpdate, BotUpdate, MiningUpdate } from './updates';
-import { EditChannelUpdate } from './updates/admin';
+import { AdminMailingUpdate, EditChannelUpdate } from './updates/admin';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { EditChannelUpdate } from './updates/admin';
     ReferralsModule,
     SponsorsModule,
     MiningModule,
+    SceneModule,
   ],
   providers: [
     BotService,
@@ -34,6 +36,7 @@ import { EditChannelUpdate } from './updates/admin';
     MiningUpdate,
     AdminUpdate,
     EditChannelUpdate,
+    AdminMailingUpdate,
   ],
   exports: [BotService],
 })

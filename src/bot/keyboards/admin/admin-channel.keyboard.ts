@@ -31,6 +31,12 @@ export const adminChannelKeyboard = (channel: SponsorChannel, fromPage = 1) => {
         `toggle-expiration-channel|${channel.id}`,
       ),
     ],
+    [
+      Markup.button.callback(
+        `${emojis.key} Проверить`,
+        `check-channel|${channel.id}`,
+      ),
+    ],
     [Markup.button.callback(`‹ Назад`, `admin-channels|${fromPage}`)],
   ];
 

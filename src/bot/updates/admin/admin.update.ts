@@ -230,4 +230,11 @@ export class AdminUpdate {
 
     return;
   }
+
+  @Action('create-channel')
+  @CheckAdmin()
+  async createChannelEnterScene(@Ctx() ctx: SceneContext) {
+    await ctx.scene.enter('create-channel');
+    return;
+  }
 }

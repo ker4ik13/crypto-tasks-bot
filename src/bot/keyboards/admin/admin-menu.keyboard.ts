@@ -9,8 +9,8 @@ export const adminMenuKeyboard = () => {
     ],
     [
       Markup.button.callback(
-        `${emojis.peoples} Рассылки ${emojis.cross}`,
-        'admin|mailing',
+        `${emojis.message} Рассылки ${emojis.cross}`,
+        'admin-mailing|1',
       ),
     ],
     [Markup.button.callback(`‹ Назад`, 'main-menu')],

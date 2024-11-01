@@ -21,7 +21,12 @@ export const adminChannelsKeyboard = (
     ];
   });
 
-  const backButtons = [[Markup.button.callback(`‹ Назад`, 'admin')]];
+  const backButtons = [
+    [
+      Markup.button.callback(`‹ Назад`, 'admin'),
+      Markup.button.callback(`${emojis.folder} Добавить`, 'create-channel'),
+    ],
+  ];
 
   return [...result, [...paginationKeyboard(pagination, PATH)], ...backButtons];
 };
