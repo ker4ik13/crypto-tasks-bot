@@ -136,19 +136,35 @@ export class MiningUpdate {
     const miningSize = this.configService.get(ENV_NAMES.MINING_SIZE_PER_SECOND);
     const currency = this.configService.get(ENV_NAMES.TELEGRAM_BOT_CURRENCY);
 
-    await ctx.editMessageText(
-      BotMiningMessages.miningStats(
-        updatedMiningUser.mining,
-        miningSize,
-        currency,
-      ),
-      {
-        parse_mode: 'HTML',
-        reply_markup: {
-          inline_keyboard: miningKeyboard(currency),
+    await ctx
+      .editMessageText(
+        BotMiningMessages.miningStats(
+          updatedMiningUser.mining,
+          miningSize,
+          currency,
+        ),
+        {
+          parse_mode: 'HTML',
+          reply_markup: {
+            inline_keyboard: miningKeyboard(currency),
+          },
         },
-      },
-    );
+      )
+      .catch(async () => {
+        await ctx.reply(
+          BotMiningMessages.miningStats(
+            updatedMiningUser.mining,
+            miningSize,
+            currency,
+          ),
+          {
+            parse_mode: 'HTML',
+            reply_markup: {
+              inline_keyboard: miningKeyboard(currency),
+            },
+          },
+        );
+      });
 
     return;
   }
