@@ -1,7 +1,7 @@
 import { dailyRewardReminderKeyboard } from '@/bot/keyboards';
 import { BotAdminMessages, BotMessages } from '@/bot/messages';
 import { DEFAULT_CURRENCY, DEFAULT_REWARD_FOR_A_FRIEND } from '@/lib/common';
-import { strongBeautyCurrency } from '@/lib/helpers';
+import { logAtCurrentNumber, strongBeautyCurrency } from '@/lib/helpers';
 import { IAdminMessage, ICustomMessage } from '@/lib/types';
 import { emojis } from '@/lib/utils';
 import {
@@ -30,6 +30,7 @@ type MarkupType =
   | ForceReply;
 
 const ONE_DAY_SECONDS = 24 * 60 * 60;
+const LOG_NUMBER = 20;
 
 @Injectable()
 export class MessagesService {
@@ -102,6 +103,12 @@ export class MessagesService {
               );
 
               successSend++;
+
+              logAtCurrentNumber(
+                successSend,
+                LOG_NUMBER,
+                `Отправлено: ${successSend}`,
+              );
             } catch (error) {
               await this.usersService.updateById(user.id, {
                 isBlockedTheBot: true,
@@ -126,6 +133,11 @@ export class MessagesService {
               );
 
               successSend++;
+              logAtCurrentNumber(
+                successSend,
+                LOG_NUMBER,
+                `Отправлено: ${successSend}`,
+              );
             } catch (error) {
               await this.usersService.updateById(user.id, {
                 isBlockedTheBot: true,
@@ -147,6 +159,11 @@ export class MessagesService {
             );
 
             successSend++;
+            logAtCurrentNumber(
+              successSend,
+              LOG_NUMBER,
+              `Отправлено: ${successSend}`,
+            );
           } catch (error) {
             console.log(error);
             await this.usersService.updateById(user.id, {
@@ -160,6 +177,8 @@ export class MessagesService {
       console.log(`Ошибка при рассылки по всем пользователям\n\n${error}`);
       await this.sendAdminMessage(BotAdminMessages.mailingError(error));
     }
+
+    console.log('Рассылка по всем пользователям завершена');
 
     const admins = await this.usersFindService.findAllAdmins();
 

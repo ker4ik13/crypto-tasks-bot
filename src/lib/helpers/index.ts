@@ -4,5 +4,6 @@ export * from './getLabelFromChannelType';
 export * from './getMessageFromCtx';
 export * from './getNormalChatId';
 export * from './getValueFromAction';
+export * from './logAtCurrentNumber';
 export * from './secondsToTime';
 export * from './splitIntoChanks';
