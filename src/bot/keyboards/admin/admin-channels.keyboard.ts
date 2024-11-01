@@ -35,5 +35,5 @@ const getChannelPreviewString = (
   channel: SponsorChannel & { _count: { subsUsers: number } },
   currency: string,
 ): string => {
-  return `${emojis[channel.type]} | ${channel.isActive ? emojis.available : emojis.unavailable} ${channel.channelName} • ${emojis.bagOfMoney} ${channel.reward} ${currency} • ${emojis.peoples} ${channel._count.subsUsers} `;
+  return `${emojis[channel.type]} • ${channel.isActive ? emojis.available : emojis.unavailable} ${channel.channelName} • ${emojis.bagOfMoney} ${channel.reward} ${currency} • ${emojis.peoples} ${channel._count.subsUsers} `;
 };
