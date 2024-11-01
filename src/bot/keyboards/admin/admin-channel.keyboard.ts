@@ -37,6 +37,7 @@ export const adminChannelKeyboard = (channel: SponsorChannel, fromPage = 1) => {
         `check-channel|${channel.id}`,
       ),
     ],
+    [Markup.button.callback(`${emojis.cross} Удалить канал`, `delete-channel`)],
     [Markup.button.callback(`‹ Назад`, `admin-channels|${fromPage}`)],
   ];
 

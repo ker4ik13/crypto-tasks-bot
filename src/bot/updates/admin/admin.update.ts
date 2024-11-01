@@ -6,6 +6,7 @@ import { ENV_NAMES } from '@/lib/common';
 import { getValueFromAction } from '@/lib/helpers';
 import { emojis } from '@/lib/utils';
 import { ConfigService } from '@nestjs/config';
+import { SponsorChannel, User } from '@prisma/client';
 import { Action, Ctx, Hears, Message, Update } from 'nestjs-telegraf';
 import { SceneContext } from 'telegraf/scenes';
 import { BotService } from '../../bot.service';
@@ -22,6 +23,7 @@ import { BotAdminMessages } from '../../messages';
 @Update()
 export class AdminUpdate {
   page = 1;
+  channel: SponsorChannel & { subsUsers: User[] };
 
   constructor(
     private readonly botService: BotService,
@@ -133,6 +135,8 @@ export class AdminUpdate {
       return;
     }
 
+    this.channel = channel;
+
     const currency = this.configService.get(ENV_NAMES.TELEGRAM_BOT_CURRENCY);
 
     await ctx
@@ -228,6 +232,15 @@ export class AdminUpdate {
         });
       });
 
+    return;
+  }
+
+  @Action('delete-channel')
+  @CheckAdmin()
+  async deleteChannelEnterScene(@Ctx() ctx: SceneContext) {
+    await ctx.scene.enter('delete-channel', {
+      channel: this.channel,
+    });
     return;
   }
 
