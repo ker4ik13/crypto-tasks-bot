@@ -2,6 +2,7 @@ import { strongBeautyCurrency } from '@/lib/helpers';
 import {
   HistoryPaginationType,
   LabelValue,
+  UserAll,
   UserWithReferral,
 } from '@/lib/types';
 import { Injectable } from '@nestjs/common';
@@ -9,7 +10,7 @@ import type { Mining, User } from '@prisma/client';
 import { DatabaseService } from '../database/database.service';
 
 @Injectable()
-export class UsersFindService {
+export class UsersAdminService {
   constructor(private readonly database: DatabaseService) {}
 
   async findAll(): Promise<User[] | null> {
@@ -201,16 +202,21 @@ export class UsersFindService {
     });
   }
 
-  async findByTelegramId(
-    telegramId: string,
-  ): Promise<(User & { mining: Mining }) | null> {
+  async findByTelegramId(telegramId: string): Promise<UserAll | null> {
     if (!telegramId) return null;
 
     const user = await this.database.user.findUnique({
       where: { telegramId: telegramId.toString() },
       include: {
-        referral: true,
+        referral: {
+          include: {
+            invitedUsers: true,
+          },
+        },
         mining: true,
+        payments: true,
+        invitedBy: true,
+        sponsorChannels: true,
       },
     });
 

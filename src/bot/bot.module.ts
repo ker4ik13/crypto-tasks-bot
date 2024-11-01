@@ -6,7 +6,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TelegrafModule } from 'nestjs-telegraf';
 import { session } from 'telegraf';
 import { BotService } from './bot.service';
-import { BotUpdate, MiningUpdate } from './updates';
+import { AdminUpdate, BotUpdate, MiningUpdate } from './updates';
+import { EditChannelUpdate } from './updates/admin';
 
 @Module({
   imports: [
@@ -27,7 +28,13 @@ import { BotUpdate, MiningUpdate } from './updates';
     SponsorsModule,
     MiningModule,
   ],
-  providers: [BotService, BotUpdate, MiningUpdate],
+  providers: [
+    BotService,
+    BotUpdate,
+    MiningUpdate,
+    AdminUpdate,
+    EditChannelUpdate,
+  ],
   exports: [BotService],
 })
 export class BotModule {}

@@ -51,15 +51,36 @@ model Payment {
   user        User           @relation(fields: [userId], references: [id])
 }
 
+model Mailing {
+  id          Int      @id @default(autoincrement())
+  message     String
+  photos      Photo[]
+  buttons     Button[]
+  date        String
+  isCompleted Boolean  @default(false)
+}
+
+model Photo {
+  url       String
+  type      String   @default("photo")
+  caption   String?
+  mailing   Mailing? @relation(fields: [mailingId], references: [id])
+  mailingId Int      @unique
+}
+
+model Button {
+  type      ButtonType
+  text      String
+  url       String
+  mailing   Mailing?   @relation(fields: [mailingId], references: [id])
+  mailingId Int        @unique
+}
+
 model Referral {
-  id   Int    @id @default(autoincrement())
-  code String @unique
-
-  // Владелец реферального кода (приглашающий пользователь)
-  owner   User @relation("ReferralOwner", fields: [ownerId], references: [id])
-  ownerId Int  @unique
-
-  // Пользователи, приглашённые по данному реферальному коду
+  id           Int    @id @default(autoincrement())
+  code         String @unique
+  owner        User   @relation("ReferralOwner", fields: [ownerId], references: [id])
+  ownerId      Int    @unique
   invitedUsers User[] @relation("InvitedUsers")
 }
 
@@ -106,4 +127,9 @@ enum SponsorChannelType {
   start
   task
   all
+}
+
+enum ButtonType {
+  callback
+  url
 }

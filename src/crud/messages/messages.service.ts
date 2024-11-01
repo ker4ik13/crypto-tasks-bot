@@ -148,6 +148,7 @@ export class MessagesService {
 
             successSend++;
           } catch (error) {
+            console.log(error);
             await this.usersService.updateById(user.id, {
               isBlockedTheBot: true,
             });

@@ -9,3 +9,16 @@ export type UserWithReferral = Prisma.UserGetPayload<{
     };
   };
 }>;
+export type UserAll = Prisma.UserGetPayload<{
+  include: {
+    referral: {
+      include: {
+        invitedUsers: true;
+      };
+    };
+    mining: true;
+    invitedBy: true;
+    payments: true;
+    sponsorChannels: true;
+  };
+}>;

@@ -1,6 +1,6 @@
 import { BotAlerts } from '@/bot/messages';
 import { getNormalChatId } from '@/lib/helpers';
-import { ICustomError } from '@/lib/types';
+import { HistoryPaginationType, ICustomError } from '@/lib/types';
 import { Injectable } from '@nestjs/common';
 import type { Prisma, SponsorChannel, User } from '@prisma/client';
 import type { Context } from 'telegraf';
@@ -26,7 +26,9 @@ export class SponsorsService {
       },
     });
   }
-  async findAll(): Promise<SponsorChannel[] | null> {
+  async findAll(): Promise<
+    (SponsorChannel & { _count: { subsUsers: number } })[] | null
+  > {
     return await this.database.sponsorChannel.findMany({
       orderBy: [{ isActive: 'desc' }, { createdDate: 'desc' }],
       include: {
@@ -35,6 +37,33 @@ export class SponsorsService {
         },
       },
     });
+  }
+
+  async findAllForAdmin(
+    page: number,
+    limit = 10,
+  ): Promise<
+    HistoryPaginationType<SponsorChannel & { _count: { subsUsers: number } }>
+  > {
+    const channels = await this.database.sponsorChannel.findMany({
+      take: limit,
+      skip: limit * (page - 1),
+      orderBy: [{ isActive: 'desc' }, { createdDate: 'desc' }],
+      include: {
+        _count: {
+          select: { subsUsers: true },
+        },
+      },
+    });
+
+    return {
+      hasNextPage:
+        page < Math.ceil((await this.database.sponsorChannel.count()) / limit),
+      hasPreviousPage: page > 1,
+      page,
+      pageItems: channels,
+      pages: Math.ceil((await this.database.sponsorChannel.count()) / limit),
+    };
   }
 
   async getStats(): Promise<SponsorChannel[]> {
@@ -94,7 +123,9 @@ export class SponsorsService {
     });
   }
 
-  async findById(id: number): Promise<SponsorChannel | null> {
+  async findById(
+    id: number,
+  ): Promise<(SponsorChannel & { subsUsers: User[] }) | null> {
     if (!id) return null;
 
     const channel = await this.database.sponsorChannel.findUnique({
@@ -230,13 +261,14 @@ export class SponsorsService {
   async updateById(
     id: number,
     dto: Prisma.SponsorChannelUpdateInput,
-  ): Promise<SponsorChannel> {
+  ): Promise<SponsorChannel & { subsUsers: User[] }> {
     return await this.database.sponsorChannel.update({
       where: { id },
       data: {
         ...dto,
       },
       include: {
+        subsUsers: true,
         _count: {
           select: { subsUsers: true },
         },

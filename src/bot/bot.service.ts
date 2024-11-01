@@ -60,7 +60,7 @@ export class BotService {
           ),
           {
             reply_markup: {
-              inline_keyboard: mainKeyboard(),
+              inline_keyboard: mainKeyboard(user),
             },
           },
         );

@@ -112,7 +112,7 @@ export class UsersService {
   async isUserAdmin(id: number): Promise<boolean> {
     const user = await this.database.user.findUnique({
       where: {
-        id,
+        telegramId: id.toString(),
         isAdmin: {
           equals: true,
         },
