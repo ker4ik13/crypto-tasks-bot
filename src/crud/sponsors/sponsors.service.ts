@@ -34,6 +34,7 @@ export class SponsorsService {
       },
     });
   }
+
   async findAll(): Promise<
     (SponsorChannel & { _count: { subsUsers: number } })[] | null
   > {

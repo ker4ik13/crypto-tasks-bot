@@ -84,6 +84,8 @@ export class MessagesService {
 
     let successSend = 0;
 
+    const startDate = new Date();
+
     try {
       // Если есть фото и их больше 1 или 1
       if (message.photos && message.photos.length >= 1) {
@@ -178,6 +180,17 @@ export class MessagesService {
       await this.sendAdminMessage(BotAdminMessages.mailingError(error));
     }
 
+    const endDate = new Date();
+    const diffTime = endDate.getTime() - startDate.getTime();
+    const diffTimeInSeconds = diffTime / 1000;
+    const diffTimeInMinutes = diffTimeInSeconds / 60;
+
+    console.log(
+      `Время выполнения рассылки в минутах: ${diffTimeInMinutes.toFixed(2)} м.`,
+    );
+    console.log(
+      `Время выполнения рассылки в секундах: ${diffTimeInSeconds.toFixed(2)} с.`,
+    );
     console.log('Рассылка по всем пользователям завершена');
 
     const admins = await this.usersFindService.findAllAdmins();
@@ -192,6 +205,14 @@ export class MessagesService {
 
     await this.sendAdminMessage(
       BotAdminMessages.mailingStatistics([
+        {
+          label: `${emojis.time} Время выполнения рассылки в минутах`,
+          value: `${diffTimeInMinutes.toFixed(2)} м.`,
+        },
+        {
+          label: `${emojis.time} Время выполнения рассылки в секундах`,
+          value: `${diffTimeInSeconds.toFixed(2)} с.\n`,
+        },
         {
           label: 'Успешно получили сообщение',
           value: `${successSend.toString()} | ${strongBeautyCurrency(

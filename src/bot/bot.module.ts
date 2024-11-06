@@ -1,3 +1,4 @@
+import { SystemLoggerModule } from '@/config';
 import { ReferralsModule, SponsorsModule, UsersModule } from '@/crud';
 import { MiningModule } from '@/crud/mining';
 import { ENV_NAMES } from '@lib/common/constants';
@@ -12,6 +13,7 @@ import { AdminMailingUpdate, EditChannelUpdate } from './updates/admin';
 
 @Module({
   imports: [
+    SystemLoggerModule,
     ConfigModule.forRoot({
       envFilePath: ENV_NAMES.ENV_PATH(process.env.NODE_ENV),
       isGlobal: true,

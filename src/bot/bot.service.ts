@@ -1,3 +1,4 @@
+import { SystemLoggerService } from '@/config';
 import { SponsorsService } from '@/crud';
 import { UsersFindService } from '@/crud/users/users-find.service';
 import {
@@ -17,6 +18,8 @@ import { SceneContext } from 'telegraf/scenes';
 import { channelsKeyboard, mainKeyboard } from './keyboards';
 import { BotMessages } from './messages';
 
+const GOOD_MEMBER_STATUSES = ['creator', 'administrator', 'member'];
+
 @Injectable()
 export class BotService {
   constructor(
@@ -24,7 +27,10 @@ export class BotService {
     private readonly sponsorsService: SponsorsService,
     private readonly configService: ConfigService,
     private readonly usersFindService: UsersFindService,
-  ) {}
+    private readonly loggerService: SystemLoggerService,
+  ) {
+    this.loggerService.setContext(BotService.name);
+  }
 
   async checkAllSubscriptions(
     ctx: SceneContext | Context,
@@ -100,11 +106,7 @@ export class BotService {
             ctx.from.id,
           );
 
-          if (
-            member.status != 'member' &&
-            member.status != 'administrator' &&
-            member.status != 'creator'
-          ) {
+          if (!GOOD_MEMBER_STATUSES.includes(member.status)) {
             notSubsChannels.push(channel);
 
             this.sponsorsService.updateBySlug(channel.channelSlug, {
@@ -130,7 +132,10 @@ export class BotService {
               admin,
               `Ошибка при проверке каналов на подписки. Возможно, бот не добавлен в администраторы канала @${channel.channelSlug}\n\n${error}`,
             );
-            console.log(error);
+            this.loggerService.error(
+              `Ошибка при проверке каналов на подписки. Возможно, бот не добавлен в администраторы канала`,
+            );
+            this.loggerService.error(error);
           }
         }
       }
@@ -142,6 +147,62 @@ export class BotService {
       );
     }
   }
+
+  // async mapChannels(ctx: Context | SceneContext, channels: SponsorChannel[]) {
+  //   try {
+  //     const notSubsChannels: Promise<SponsorChannel>[] = channels.map(
+  //       (channel) => {
+  //         return new Promise(async (resolve, reject) => {
+  //           try {
+  //             const member = await ctx.telegram.getChatMember(
+  //               getNormalChatId(channel.channelSlug),
+  //               ctx.from.id,
+  //             );
+
+  //             console.log(member.status);
+
+  //             if (!GOOD_MEMBER_STATUSES.includes(member.status)) {
+  //               this.sponsorsService.updateBySlug(channel.channelSlug, {
+  //                 subsUsers: {
+  //                   disconnect: {
+  //                     telegramId: ctx.from.id.toString(),
+  //                   },
+  //                 },
+  //               });
+
+  //               resolve(channel);
+  //             }
+
+  //             return;
+  //           } catch (error) {
+  //             for (const admin of CHATS) {
+  //               await this.sendMessageByChatId(
+  //                 admin,
+  //                 `Ошибка при проверке каналов на подписки. Возможно, бот не добавлен в администраторы канала @${channel.channelSlug}\n\n${error}`,
+  //               );
+  //               this.loggerService.error(
+  //                 `Ошибка при проверке каналов на подписки. Возможно, бот не добавлен в администраторы канала @${channel.channelSlug}`,
+  //               );
+  //               this.loggerService.error(error);
+  //             }
+  //             reject(error);
+  //           }
+  //         });
+  //       },
+  //     );
+
+  //     return Promise.all(notSubsChannels);
+  //   } catch (error) {
+  //     this.loggerService.error(
+  //       `Ошибка при проверке каналов на подписки. Возможно, бот не добавлен в администраторы канала`,
+  //     );
+  //     this.loggerService.error(error);
+
+  //     throw new Error(
+  //       `Ошибка при проверке каналов на подписки. Возможно, бот не добавлен в администраторы канала.\n\n${error}`,
+  //     );
+  //   }
+  // }
 
   async sendMessageNewReferral(
     ownerTelegramId: string,
